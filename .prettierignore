@@ -1,0 +1,3 @@
+*.interface.ts
+src/common/base/base.service.ts
+src/modules/database/migrations/*

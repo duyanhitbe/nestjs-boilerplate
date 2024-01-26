@@ -12,10 +12,20 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
     "noImplicitAny": false,
-    "strictBindCallApply": false,
+    "strictBindCallApply": true,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@modules": ["src/modules"],
+      "@common": ["src/common"],
+      "@apis/*": ["src/apis/*"],
+      "packageJson": ["package.json"]
+    }
   }
 }
