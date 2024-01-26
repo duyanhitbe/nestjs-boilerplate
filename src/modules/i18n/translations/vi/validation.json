@@ -1,0 +1,10 @@
+{
+    "IS_STRING": "{property} phải là một chuỗi",
+    "IS_NOT_EMPTY": "{property} không được là chuỗi rỗng",
+    "IS_NUMBER": "{property} phải là một số",
+    "IS_EMAIL": "{property} không đúng định dạng email",
+    "IS_NUMBER_STRING": "{property} phải là một số dạng chuỗi",
+    "IS_DATE_STRING": "{property} phải là một chuỗi ngày tháng năm",
+    "MIN": "{property} phải lớn hơn hoặc bằng {constraints.0}",
+	"MAX": "{property} phải nhỏ hơn hoặc bằng {constraints.0}"
+}

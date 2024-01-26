@@ -1,0 +1,10 @@
+{
+	"IS_STRING": "{property} must be a string",
+	"IS_NOT_EMPTY": "{property} should not empty",
+	"IS_NUMBER": "{property} mus be a number",
+	"IS_EMAIL": "{property} must be an email",
+	"IS_NUMBER_STRING": "{property} must be a number string",
+	"IS_DATE_STRING": "{property} must be a date string",
+	"MIN": "{property} must be at least or equal {constraints.0}",
+	"MAX": "{property} must be less than or equal {constraints.0}"
+}
