@@ -2,7 +2,7 @@ diff --git a/dist/lib/resource/files/ts/__name__.controller.__specFileSuffix__.t
 deleted file mode 100644
 index 17e58435f19ce66f9b8d4d82ff3736c43a908712..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.controller.ts b/dist/lib/resource/files/ts/__name__.controller.ts
-index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..ca99e372a1a8ddd14d24f543018e3806f0d604fa 100644
+index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..c6c4f3ba3a2a24bbdaa24054a9fb930ac95dbcfd 100644
 --- a/dist/lib/resource/files/ts/__name__.controller.ts
 +++ b/dist/lib/resource/files/ts/__name__.controller.ts
 @@ -1,63 +1,48 @@
@@ -21,7 +21,7 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..ca99e372a1a8ddd14d24f543018e3806
 +import { CommandBus } from '@nestjs/cqrs';
 +import { ApiParam, ApiTags } from '@nestjs/swagger';
 +import { Create<%= classify(name) %>Dto } from './dto/create-<%= name %>.dto';
-+import { GetAll<%= classify(name) %>WithPaginationDto } from './dto/get-all-<%= name %>-with-pagination.dto';
++import { GetAll<%= classify(name) %>PaginatedDto } from './dto/get-all-<%= name %>-paginated.dto';
 +import { GetOne<%= classify(name) %>ByIdDto } from './dto/get-one-<%= name %>-by-id.dto';
 +import { Remove<%= classify(name) %>ByIdDto } from './dto/remove-<%= name %>-by-id.dto';
 +import { Update<%= classify(name) %>ByIdDto } from './dto/update-<%= name %>-by-id.dto';
@@ -92,8 +92,8 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..ca99e372a1a8ddd14d24f543018e3806
 +
 +	@Get()
 +	@ApiGetAll(<%= classify(name) %>Entity, '<%= classify(name) %>')
-+	getAll(@Query() query: GetAll<%= classify(name) %>WithPaginationDto) {
-+		return this.commandBus.execute(new GetAll<%= classify(name) %>WithPaginationDto(query));
++	getAll(@Query() query: GetAll<%= classify(name) %>PaginatedDto) {
++		return this.commandBus.execute(new GetAll<%= classify(name) %>PaginatedDto(query));
 +	}
 +
 +	@Get(':id')
@@ -126,7 +126,7 @@ index 0000000000000000000000000000000000000000..128197f7804619bc2ba80dcea7791db3
 +
 +export abstract class I<%= classify(name) %>Service extends BaseService<<%= classify(name) %>Entity> {}
 diff --git a/dist/lib/resource/files/ts/__name__.module.ts b/dist/lib/resource/files/ts/__name__.module.ts
-index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..1ead8c846a2bc27fecd26397ff33b971fe920b7f 100644
+index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17fe973a9b 100644
 --- a/dist/lib/resource/files/ts/__name__.module.ts
 +++ b/dist/lib/resource/files/ts/__name__.module.ts
 @@ -1,9 +1,29 @@
@@ -134,7 +134,7 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..1ead8c846a2bc27fecd26397ff33b971
 +import { TypeOrmModule } from '@nestjs/typeorm';
 +import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
 +import { Create<%= classify(name) %>Handler } from './handlers/create-<%= name %>.handler';
-+import { GetAll<%= classify(name) %>WithPaginationHandler } from './handlers/get-all-<%= name %>-with-pagination.handler';
++import { GetAll<%= classify(name) %>PaginatedHandler } from './handlers/get-all-<%= name %>-paginated.handler';
 +import { GetOne<%= classify(name) %>ByIdHandler } from './handlers/get-one-<%= name %>-by-id.handler';
 +import { Remove<%= classify(name) %>ByIdHandler } from './handlers/remove-<%= name %>-by-id.handler';
 +import { Update<%= classify(name) %>ByIdHandler } from './handlers/update-<%= name %>-by-id.handler';
@@ -154,7 +154,7 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..1ead8c846a2bc27fecd26397ff33b971
 +			useClass: <%= classify(name) %>Service
 +		},
 +		Create<%= classify(name) %>Handler,
-+		GetAll<%= classify(name) %>WithPaginationHandler,
++		GetAll<%= classify(name) %>PaginatedHandler,
 +		GetOne<%= classify(name) %>ByIdHandler,
 +		Remove<%= classify(name) %>ByIdHandler,
 +		Update<%= classify(name) %>ByIdHandler
@@ -220,16 +220,16 @@ index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..303ec6162f98ba800d516689a90bef72
 +		Object.assign(this, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/dto/get-all-__name@singular__-with-pagination.dto.ts b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-with-pagination.dto.ts
+diff --git a/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..5131bb73fa6490f4f3888372ce20ce9c2ebe22ed
+index 0000000000000000000000000000000000000000..e2a3d2ef6807b52e26c64c20d406b2569aa8117f
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-with-pagination.dto.ts
++++ b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts
 @@ -0,0 +1,8 @@
 +import { PaginationDto } from '@common';
 +
-+export class GetAll<%= classify(name) %>WithPaginationDto extends PaginationDto {
-+	constructor(data: GetAll<%= classify(name) %>WithPaginationDto) {
++export class GetAll<%= classify(name) %>PaginatedDto extends PaginationDto {
++	constructor(data: GetAll<%= classify(name) %>PaginatedDto) {
 +		super();
 +		Object.assign(this, data);
 +	}
@@ -282,12 +282,12 @@ diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/di
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-index 362e741b403a8216353797d2235f07e2ac77719b..dfdfb4c116343695c2c05e4c6643b6c7fdac691f 100644
+index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e59ffd95f 100644
 --- a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
 +++ b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
 @@ -1,7 +1,5 @@
 -<% if (type === 'graphql-code-first') { %>import { ObjectType, Field, Int } from '@nestjs/graphql';
-+import { BaseEntityWithMerchant } from '@common';
++import { BaseEntity } from '@common';
 +import { Entity } from 'typeorm';
  
 -@ObjectType()
@@ -296,7 +296,7 @@ index 362e741b403a8216353797d2235f07e2ac77719b..dfdfb4c116343695c2c05e4c6643b6c7
 -  exampleField: number;
 -}<% } else { %>export class <%= singular(classify(name)) %> {}<% } %>
 +@Entity({ name: '<%= dashed(name) %>' })
-+export class <%= classify(name) %>Entity extends BaseEntityWithMerchant {}
++export class <%= classify(name) %>Entity extends BaseEntity {}
 diff --git a/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..20f742743a8c39e6f8f8e82594a592ca985c2084
@@ -320,29 +320,27 @@ index 0000000000000000000000000000000000000000..20f742743a8c39e6f8f8e82594a592ca
 +		return this.<%= lowercased(name) %>Service.create(command);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/handlers/get-all-__name__-with-pagination.handler.ts b/dist/lib/resource/files/ts/handlers/get-all-__name__-with-pagination.handler.ts
+diff --git a/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts b/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..1dab302633584fb347c493daab1be0067e5d457d
+index 0000000000000000000000000000000000000000..be5f045bbf9f26124d1d4f21a65616e908b6ab12
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/handlers/get-all-__name__-with-pagination.handler.ts
-@@ -0,0 +1,19 @@
++++ b/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts
+@@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { GetAll<%= classify(name) %>WithPaginationDto } from '../dto/get-all-<%= name %>-with-pagination.dto';
++import { GetAll<%= classify(name) %>PaginatedDto } from '../dto/get-all-<%= name %>-paginated.dto';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(GetAll<%= classify(name) %>WithPaginationDto)
-+export class GetAll<%= classify(name) %>WithPaginationHandler
-+	implements ICommandHandler<GetAll<%= classify(name) %>WithPaginationDto>
-+{
-+	private logger = new Logger(GetAll<%= classify(name) %>WithPaginationHandler.name);
++@CommandHandler(GetAll<%= classify(name) %>PaginatedDto)
++export class GetAll<%= classify(name) %>PaginatedHandler implements ICommandHandler<GetAll<%= classify(name) %>PaginatedDto> {
++	private logger = new Logger(GetAll<%= classify(name) %>PaginatedHandler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: GetAll<%= classify(name) %>WithPaginationDto) {
++	async execute(command: GetAll<%= classify(name) %>PaginatedDto) {
 +		this.logger.log(command);
 +		const {} = command;
-+		return this.<%= lowercased(name) %>Service.getAllWithPagination(command);
++		return this.<%= lowercased(name) %>Service.getAllPaginated(command);
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/handlers/get-one-__name__-by-id.handler.ts b/dist/lib/resource/files/ts/handlers/get-one-__name__-by-id.handler.ts
@@ -414,27 +412,6 @@ index 0000000000000000000000000000000000000000..6aedbde2d85c0881d40384f04e52f0cd
 +		return this.<%= lowercased(name) %>Service.updateById(id, command);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/mocks/__name__.handler.ts b/dist/lib/resource/files/ts/mocks/__name__.handler.ts
-new file mode 100644
-index 0000000000000000000000000000000000000000..897422f70acaf3fbc37a878a08541f403b8813b6
---- /dev/null
-+++ b/dist/lib/resource/files/ts/mocks/__name__.handler.ts
-@@ -0,0 +1 @@
-+export const <%= classify(name) %>Handler = jest.fn().mockReturnValue({});
-diff --git a/dist/lib/resource/files/ts/mocks/__name__.repository.ts b/dist/lib/resource/files/ts/mocks/__name__.repository.ts
-new file mode 100644
-index 0000000000000000000000000000000000000000..41cdb3b1a3e0cb50ae09a59e47a02f1edfd84ccd
---- /dev/null
-+++ b/dist/lib/resource/files/ts/mocks/__name__.repository.ts
-@@ -0,0 +1 @@
-+export const <%= classify(name) %>Repository = jest.fn().mockReturnValue({});
-diff --git a/dist/lib/resource/files/ts/mocks/__name__.service.ts b/dist/lib/resource/files/ts/mocks/__name__.service.ts
-new file mode 100644
-index 0000000000000000000000000000000000000000..d36e25edee9d9c77aa57657197c249edda978da5
---- /dev/null
-+++ b/dist/lib/resource/files/ts/mocks/__name__.service.ts
-@@ -0,0 +1 @@
-+export const <%= classify(name) %>Service = jest.fn().mockReturnValue({});
 diff --git a/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..7dbb1cbadd1a94e72f7b7428e5cb74675b2b8c89
