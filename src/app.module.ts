@@ -1,3 +1,4 @@
+import { ApiModule } from '@apis/api.module';
 import { ConfigModule, CronModule, DatabaseModule } from '@modules';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +22,8 @@ import { I18NModule } from './modules/i18n/i18n.module';
 		EventEmitterModule.forRoot({
 			maxListeners: 20
 		}),
-		I18NModule
+		I18NModule,
+		ApiModule
 	],
 	controllers: [AppController],
 	providers
