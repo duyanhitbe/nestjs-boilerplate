@@ -717,103 +717,101 @@ index 0000000000000000000000000000000000000000..08fd2c67ac4489756f7fdec9ce5bc632
 +});
 diff --git a/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..8bbbf4f74663344f8aa6ec1b65c00c2c591ed76f
+index 0000000000000000000000000000000000000000..6ba46c46fd3cba9f230e169d0b736dafa6e9cff0
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts
-@@ -0,0 +1,42 @@
+@@ -0,0 +1,43 @@
 +import { Test, TestingModule } from '@nestjs/testing';
 +import { v4 as uuidv4 } from 'uuid';
-+import { RemoveUserByIdCommand } from '../commands/remove-user-by-id.command';
-+import { RemoveUserByIdHandler } from '../handlers/remove-user-by-id.handler';
-+import { IUserService } from '../user.interface';
-+import { UserService } from '../user.service';
++import { Remove<%= classify(name) %>ByIdCommand } from '../commands/remove-<%= name %>-by-id.command';
++import { Remove<%= classify(name) %>ByIdHandler } from '../handlers/remove-<%= name %>-by-id.handler';
++import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
++import { <%= classify(name) %>Service } from '../<%= name %>.service';
 +
-+jest.mock('../user.service');
++jest.mock('../<%= name %>.service');
 +
-+describe('RemoveUserByIdHandler', () => {
-+	let handler: RemoveUserByIdHandler;
-+	let userService: IUserService;
++describe('Remove<%= classify(name) %>ByIdHandler', () => {
++	let handler: Remove<%= classify(name) %>ByIdHandler;
++	let <%= lowercased(name) %>Service: I<%= classify(name) %>Service;
 +
 +	beforeEach(async () => {
 +		const module: TestingModule = await Test.createTestingModule({
 +			providers: [
-+				RemoveUserByIdHandler,
++				Remove<%= classify(name) %>ByIdHandler,
 +				{
-+					provide: IUserService,
-+					useClass: UserService
++					provide: I<%= classify(name) %>Service,
++					useClass: <%= classify(name) %>Service
 +				}
 +			]
 +		}).compile();
 +
-+		handler = module.get<RemoveUserByIdHandler>(RemoveUserByIdHandler);
-+		userService = module.get<IUserService>(IUserService);
++		handler = module.get<Remove<%= classify(name) %>ByIdHandler>(Remove<%= classify(name) %>ByIdHandler);
++		<%= lowercased(name) %>Service = module.get<I<%= classify(name) %>Service>(I<%= classify(name) %>Service);
 +	});
 +
 +	it('should be defined', () => {
 +		expect(handler).toBeDefined();
 +	});
 +
-+	it('should call userService.softRemoveById with the provided id', async () => {
-+		const data = new RemoveUserByIdCommand({
++	it('should call <%= lowercased(name) %>Service.softRemoveById with the provided id', async () => {
++		const remove<%= classify(name) %>ByIdCommand = new Remove<%= classify(name) %>ByIdCommand({
 +			id: uuidv4()
 +		});
 +
-+		await handler.execute(data);
++		await handler.execute(remove<%= classify(name) %>ByIdCommand);
++		const { id } = remove<%= classify(name) %>ByIdCommand;
 +
-+		expect(userService.softRemoveById).toHaveBeenCalledWith(data.id);
++		expect(<%= lowercased(name) %>Service.softRemoveById).toHaveBeenCalledWith(id);
 +	});
 +});
 diff --git a/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..f077a20c074e88176d7d8abc3a096a8c9d459095
+index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e43688046d
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,44 @@
 +import { Test, TestingModule } from '@nestjs/testing';
 +import { v4 as uuidv4 } from 'uuid';
-+import { UpdateUserByIdCommand } from '../commands/update-user-by-id.command';
-+import { UpdateUserByIdHandler } from '../handlers/update-user-by-id.handler';
-+import { IUserService } from '../user.interface';
-+import { UserService } from '../user.service';
++import { Update<%= classify(name) %>ByIdCommand } from '../commands/update-<%= name %>-by-id.command';
++import { Update<%= classify(name) %>ByIdHandler } from '../handlers/update-<%= name %>-by-id.handler';
++import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
++import { <%= classify(name) %>Service } from '../<%= name %>.service';
 +
-+jest.mock('../user.service');
++jest.mock('../<%= name %>.service');
 +
-+describe('UpdateUserByIdHandler', () => {
-+	let handler: UpdateUserByIdHandler;
-+	let userService: IUserService;
++describe('Update<%= classify(name) %>ByIdHandler', () => {
++	let handler: Update<%= classify(name) %>ByIdHandler;
++	let <%= lowercased(name) %>Service: I<%= classify(name) %>Service;
 +
 +	beforeEach(async () => {
 +		const module: TestingModule = await Test.createTestingModule({
 +			providers: [
-+				UpdateUserByIdHandler,
++				Update<%= classify(name) %>ByIdHandler,
 +				{
-+					provide: IUserService,
-+					useClass: UserService
++					provide: I<%= classify(name) %>Service,
++					useClass: <%= classify(name) %>Service
 +				}
 +			]
 +		}).compile();
 +
-+		handler = module.get<UpdateUserByIdHandler>(UpdateUserByIdHandler);
-+		userService = module.get<IUserService>(IUserService);
++		handler = module.get<Update<%= classify(name) %>ByIdHandler>(Update<%= classify(name) %>ByIdHandler);
++		<%= lowercased(name) %>Service = module.get<I<%= classify(name) %>Service>(I<%= classify(name) %>Service);
 +	});
 +
 +	it('should be defined', () => {
 +		expect(handler).toBeDefined();
 +	});
 +
-+	it('should call userService.create with the provided data', async () => {
-+		const mockUpdateUserByIdCommand = new UpdateUserByIdCommand({
++	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
++		const update<%= classify(name) %>ByIdCommand = new Update<%= classify(name) %>ByIdCommand({
 +			id: uuidv4(),
-+			data: {
-+				username: 'username',
-+				password: 'password'
-+			}
++			data: {}
 +		});
 +
-+		await handler.execute(mockUpdateUserByIdCommand);
-+		const { id, data } = mockUpdateUserByIdCommand;
++		await handler.execute(update<%= classify(name) %>ByIdCommand);
++		const { id, data } = update<%= classify(name) %>ByIdCommand;
 +
-+		expect(userService.updateById).toHaveBeenCalledWith(id, data);
++		expect(<%= lowercased(name) %>Service.updateById).toHaveBeenCalledWith(id, data);
 +	});
 +});
 diff --git a/dist/lib/resource/resource.factory.js b/dist/lib/resource/resource.factory.js
