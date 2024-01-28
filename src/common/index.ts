@@ -5,6 +5,8 @@ export * from './base/base.swagger';
 
 export * from './decorators/hide-controller.decorator';
 export * from './decorators/use-env.decorator';
+export * from './decorators/use-user-guard.decorator';
+export * from './decorators/user.decorator';
 
 export * from './enums/language.enum';
 

@@ -1,10 +1,8 @@
 import { ApiModule } from '@apis/api.module';
-import { ConfigModule, CronModule, DatabaseModule } from '@modules';
+import { ConfigModule, CronModule, DatabaseModule, JwtModule } from '@modules';
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { providers } from './app.provider';
 import { I18NModule } from './modules/i18n/i18n.module';
@@ -14,12 +12,7 @@ import { I18NModule } from './modules/i18n/i18n.module';
 		ConfigModule,
 		CronModule,
 		DatabaseModule,
-		JwtModule.registerAsync({
-			inject: [ConfigService],
-			useFactory: () => ({
-				global: true
-			})
-		}),
+		JwtModule,
 		EventEmitterModule.forRoot({
 			maxListeners: 20
 		}),
