@@ -434,39 +434,68 @@ index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f
 +		return this.<%= lowercased(name) %>Service.updateById(id, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts
+diff --git a/dist/lib/resource/files/ts/mocks/__name__.service.ts b/dist/lib/resource/files/ts/mocks/__name__.service.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..7dbb1cbadd1a94e72f7b7428e5cb74675b2b8c89
+index 0000000000000000000000000000000000000000..cb7a6d76ee28a6b304d4a1cd5ebd9f0fa5591405
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts
-@@ -0,0 +1,28 @@
-+import { Test, TestingModule } from '@nestjs/testing';
-+import { <%= classify(name) %>Controller } from '../<%= name %>.controller';
-+import { I<%= classify(name) %>Handler } from '../<%= name %>.interface';
-+import { <%= classify(name) %>Handler } from '../<%= name %>.handler';
++++ b/dist/lib/resource/files/ts/mocks/__name__.service.ts
+@@ -0,0 +1,57 @@
++import { PaginationDto } from '@common';
++import { v4 as uuidv4 } from 'uuid';
++import { Create<%= classify(name) %>Dto } from '../dto/create-<%= name %>.dto';
++import { Update<%= classify(name) %>ByIdDto } from '../dto/update-<%= name %>-by-id.dto';
++import { <%= classify(name) %>Entity } from '../entities/<%= name %>.entity';
 +
-+jest.mock('../<%= name %>.handler');
-+
-+describe('<%= classify(name) %>Controller', () => {
-+	let controller: <%= classify(name) %>Controller;
-+
-+	beforeEach(async () => {
-+		const module: TestingModule = await Test.createTestingModule({
-+			controllers: [<%= classify(name) %>Controller],
-+			providers: [
-+				{
-+					provide: I<%= classify(name) %>Handler,
-+					useClass: <%= classify(name) %>Handler
-+				}
-+			]
-+		}).compile();
-+
-+		controller = module.get<<%= classify(name) %>Controller>(<%= classify(name) %>Controller);
-+	});
-+
-+	it('should be defined', () => {
-+		expect(controller).toBeDefined();
-+	});
++export const <%= classify(name) %>Service = jest.fn().mockReturnValue({
++	create: async (dto: Create<%= classify(name) %>Dto): Promise<Partial<<%= classify(name) %>Entity>> => ({
++		id: uuidv4(),
++		createdAt: new Date(),
++		updatedAt: new Date()
++	}),
++	getAllPaginated: async (
++		query: PaginationDto
++	): Promise<IPaginationResponse<Partial<<%= classify(name) %>Entity>>> => {
++		const data = [
++			{
++				id: uuidv4(),
++				createdAt: new Date(),
++				updatedAt: new Date()
++			},
++			{
++				id: uuidv4(),
++				createdAt: new Date(),
++				updatedAt: new Date()
++			}
++		];
++		const limit = +(query.limit || 10);
++		const page = +(query.page || 10);
++		const offset = limit * (page - 1);
++		const total = data.length;
++		return {
++			data: data.slice(offset, limit * page),
++			pagination: {
++				limit,
++				page,
++				total
++			}
++		};
++	},
++	getOneByIdOrFail: async (id: string) => ({
++		id,
++		createdAt: new Date(),
++		updatedAt: new Date()
++	}),
++	softRemoveById: async (id: string) => ({
++		id,
++		createdAt: new Date(),
++		updatedAt: new Date()
++	}),
++	updateById: async (id: string, data: Update<%= classify(name) %>ByIdDto) => ({
++		...data,
++		id,
++		createdAt: new Date(),
++		updatedAt: new Date()
++	})
 +});
 diff --git a/dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.gateway.__specFileSuffix__.ts
 similarity index 78%
@@ -504,16 +533,17 @@ index 2ef2c6fcae7e0990141c3bc062c112c42b9cfe9e..38800fb52fe2376d2bb147283a90cc0d
    let resolver: <%= classify(name) %>Resolver;
 diff --git a/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..653f454bd51db4e5405f5269cf26b665a8dbac9b
+index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b44a78d79
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,32 @@
 +import { Test, TestingModule } from '@nestjs/testing';
 +import { getRepositoryToken } from '@nestjs/typeorm';
++import { <%= classify(name) %>Entity } from '../entities/<%= name %>.entity';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +import { <%= classify(name) %>Service } from '../<%= name %>.service';
-+import { <%= classify(name) %>Entity } from '../entities/<%= name %>.entity';
-+import { <%= classify(name) %>Repository } from '../mocks/<%= name %>.repository';
++
++const mock<%= classify(name) %>Repository = jest.fn().mockReturnValue({});
 +
 +describe('<%= classify(name) %>Service', () => {
 +	let service: I<%= classify(name) %>Service;
@@ -527,7 +557,7 @@ index 0000000000000000000000000000000000000000..653f454bd51db4e5405f5269cf26b665
 +				},
 +				{
 +					provide: getRepositoryToken(<%= classify(name) %>Entity),
-+					useFactory: <%= classify(name) %>Repository
++					useValue: mock<%= classify(name) %>Repository
 +				}
 +			]
 +		}).compile();
@@ -537,6 +567,253 @@ index 0000000000000000000000000000000000000000..653f454bd51db4e5405f5269cf26b665
 +
 +	it('should be defined', () => {
 +		expect(service).toBeDefined();
++	});
++});
+diff --git a/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc524cf2d0
+--- /dev/null
++++ b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
+@@ -0,0 +1,40 @@
++import { Test, TestingModule } from '@nestjs/testing';
++import { Create<%= classify(name) %>Command } from '../commands/create-<%= name %>.command';
++import { Create<%= classify(name) %>Handler } from '../handlers/create-<%= name %>.handler';
++import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
++import { <%= classify(name) %>Service } from '../<%= name %>.service';
++
++jest.mock('../<%= name %>.service');
++
++describe('Create<%= classify(name) %>Handler', () => {
++	let handler: Create<%= classify(name) %>Handler;
++	let <%= lowercased(name) %>Service: I<%= classify(name) %>Service;
++
++	beforeEach(async () => {
++		const module: TestingModule = await Test.createTestingModule({
++			providers: [
++				Create<%= classify(name) %>Handler,
++				{
++					provide: I<%= classify(name) %>Service,
++					useClass: <%= classify(name) %>Service
++				}
++			]
++		}).compile();
++
++		handler = module.get<Create<%= classify(name) %>Handler>(Create<%= classify(name) %>Handler);
++		<%= lowercased(name) %>Service = module.get<I<%= classify(name) %>Service>(I<%= classify(name) %>Service);
++	});
++
++	it('should be defined', () => {
++		expect(handler).toBeDefined();
++	});
++
++	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
++		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: {} });
++
++		await handler.execute(create<%= classify(name) %>Command);
++		const { data } = create<%= classify(name) %>Command;
++
++		expect(<%= lowercased(name) %>Service.create).toHaveBeenCalledWith(data);
++	});
++});
+diff --git a/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..ffd03cce08cc3656c74e519eb4e8629346aec635
+--- /dev/null
++++ b/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts
+@@ -0,0 +1,45 @@
++import { Test, TestingModule } from '@nestjs/testing';
++import { GetAll<%= classify(name) %>PaginatedCommand } from '../commands/get-all-<%= name %>-paginated.command';
++import { GetAll<%= classify(name) %>PaginatedHandler } from '../handlers/get-all-<%= name %>-paginated.handler';
++import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
++import { <%= classify(name) %>Service } from '../<%= name %>.service';
++
++jest.mock('../<%= name %>.service');
++
++describe('GetAll<%= classify(name) %>PaginatedHandler', () => {
++	let handler: GetAll<%= classify(name) %>PaginatedHandler;
++	let <%= lowercased(name) %>Service: I<%= classify(name) %>Service;
++
++	beforeEach(async () => {
++		const module: TestingModule = await Test.createTestingModule({
++			providers: [
++				GetAll<%= classify(name) %>PaginatedHandler,
++				{
++					provide: I<%= classify(name) %>Service,
++					useClass: <%= classify(name) %>Service
++				}
++			]
++		}).compile();
++
++		handler = module.get<GetAll<%= classify(name) %>PaginatedHandler>(GetAll<%= classify(name) %>PaginatedHandler);
++		<%= lowercased(name) %>Service = module.get<I<%= classify(name) %>Service>(I<%= classify(name) %>Service);
++	});
++
++	it('should be defined', () => {
++		expect(handler).toBeDefined();
++	});
++
++	it('should call <%= lowercased(name) %>Service.getAllPaginated with the provided query', async () => {
++		const getAll<%= classify(name) %>PaginatedCommand = new GetAll<%= classify(name) %>PaginatedCommand({
++			query: {
++				limit: '10',
++				page: '1'
++			}
++		});
++
++		await handler.execute(getAll<%= classify(name) %>PaginatedCommand);
++		const { query } = getAll<%= classify(name) %>PaginatedCommand;
++
++		expect(<%= lowercased(name) %>Service.getAllPaginated).toHaveBeenCalledWith(query);
++	});
++});
+diff --git a/dist/lib/resource/files/ts/test/get-one-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/get-one-__name__-by-id.handler.__specFileSuffix__.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..08fd2c67ac4489756f7fdec9ce5bc632ee900d2e
+--- /dev/null
++++ b/dist/lib/resource/files/ts/test/get-one-__name__-by-id.handler.__specFileSuffix__.ts
+@@ -0,0 +1,43 @@
++import { Test, TestingModule } from '@nestjs/testing';
++import { v4 as uuidv4 } from 'uuid';
++import { GetOne<%= classify(name) %>ByIdCommand } from '../commands/get-one-<%= name %>-by-id.command';
++import { GetOne<%= classify(name) %>ByIdHandler } from '../handlers/get-one-<%= name %>-by-id.handler';
++import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
++import { <%= classify(name) %>Service } from '../<%= name %>.service';
++
++jest.mock('../<%= name %>.service');
++
++describe('GetOne<%= classify(name) %>ByIdHandler', () => {
++	let handler: GetOne<%= classify(name) %>ByIdHandler;
++	let <%= lowercased(name) %>Service: I<%= classify(name) %>Service;
++
++	beforeEach(async () => {
++		const module: TestingModule = await Test.createTestingModule({
++			providers: [
++				GetOne<%= classify(name) %>ByIdHandler,
++				{
++					provide: I<%= classify(name) %>Service,
++					useClass: <%= classify(name) %>Service
++				}
++			]
++		}).compile();
++
++		handler = module.get<GetOne<%= classify(name) %>ByIdHandler>(GetOne<%= classify(name) %>ByIdHandler);
++		<%= lowercased(name) %>Service = module.get<I<%= classify(name) %>Service>(I<%= classify(name) %>Service);
++	});
++
++	it('should be defined', () => {
++		expect(handler).toBeDefined();
++	});
++
++	it('should call <%= lowercased(name) %>Service.getOneByIdOrFail with the provided id', async () => {
++		const getOne<%= classify(name) %>ByIdCommand = new GetOne<%= classify(name) %>ByIdCommand({
++			id: uuidv4()
++		});
++
++		await handler.execute(getOne<%= classify(name) %>ByIdCommand);
++		const { id } = getOne<%= classify(name) %>ByIdCommand;
++
++		expect(<%= lowercased(name) %>Service.getOneByIdOrFail).toHaveBeenCalledWith(id);
++	});
++});
+diff --git a/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..8bbbf4f74663344f8aa6ec1b65c00c2c591ed76f
+--- /dev/null
++++ b/dist/lib/resource/files/ts/test/remove-__name__-by-id.handler.__specFileSuffix__.ts
+@@ -0,0 +1,42 @@
++import { Test, TestingModule } from '@nestjs/testing';
++import { v4 as uuidv4 } from 'uuid';
++import { RemoveUserByIdCommand } from '../commands/remove-user-by-id.command';
++import { RemoveUserByIdHandler } from '../handlers/remove-user-by-id.handler';
++import { IUserService } from '../user.interface';
++import { UserService } from '../user.service';
++
++jest.mock('../user.service');
++
++describe('RemoveUserByIdHandler', () => {
++	let handler: RemoveUserByIdHandler;
++	let userService: IUserService;
++
++	beforeEach(async () => {
++		const module: TestingModule = await Test.createTestingModule({
++			providers: [
++				RemoveUserByIdHandler,
++				{
++					provide: IUserService,
++					useClass: UserService
++				}
++			]
++		}).compile();
++
++		handler = module.get<RemoveUserByIdHandler>(RemoveUserByIdHandler);
++		userService = module.get<IUserService>(IUserService);
++	});
++
++	it('should be defined', () => {
++		expect(handler).toBeDefined();
++	});
++
++	it('should call userService.softRemoveById with the provided id', async () => {
++		const data = new RemoveUserByIdCommand({
++			id: uuidv4()
++		});
++
++		await handler.execute(data);
++
++		expect(userService.softRemoveById).toHaveBeenCalledWith(data.id);
++	});
++});
+diff --git a/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..f077a20c074e88176d7d8abc3a096a8c9d459095
+--- /dev/null
++++ b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
+@@ -0,0 +1,47 @@
++import { Test, TestingModule } from '@nestjs/testing';
++import { v4 as uuidv4 } from 'uuid';
++import { UpdateUserByIdCommand } from '../commands/update-user-by-id.command';
++import { UpdateUserByIdHandler } from '../handlers/update-user-by-id.handler';
++import { IUserService } from '../user.interface';
++import { UserService } from '../user.service';
++
++jest.mock('../user.service');
++
++describe('UpdateUserByIdHandler', () => {
++	let handler: UpdateUserByIdHandler;
++	let userService: IUserService;
++
++	beforeEach(async () => {
++		const module: TestingModule = await Test.createTestingModule({
++			providers: [
++				UpdateUserByIdHandler,
++				{
++					provide: IUserService,
++					useClass: UserService
++				}
++			]
++		}).compile();
++
++		handler = module.get<UpdateUserByIdHandler>(UpdateUserByIdHandler);
++		userService = module.get<IUserService>(IUserService);
++	});
++
++	it('should be defined', () => {
++		expect(handler).toBeDefined();
++	});
++
++	it('should call userService.create with the provided data', async () => {
++		const mockUpdateUserByIdCommand = new UpdateUserByIdCommand({
++			id: uuidv4(),
++			data: {
++				username: 'username',
++				password: 'password'
++			}
++		});
++
++		await handler.execute(mockUpdateUserByIdCommand);
++		const { id, data } = mockUpdateUserByIdCommand;
++
++		expect(userService.updateById).toHaveBeenCalledWith(id, data);
 +	});
 +});
 diff --git a/dist/lib/resource/resource.factory.js b/dist/lib/resource/resource.factory.js
