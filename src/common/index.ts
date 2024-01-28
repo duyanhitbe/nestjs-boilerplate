@@ -14,6 +14,7 @@ export * from './filters/typeorm.filter';
 export * from './guards/env.guard';
 
 export * from './helpers/excel.helper';
+export * from './helpers/file.helper';
 export * from './helpers/format-date.helper';
 export * from './helpers/getTokenFromHeader.helper';
 export * from './helpers/pagination.helper';

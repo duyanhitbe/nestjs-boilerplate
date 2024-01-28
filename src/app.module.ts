@@ -2,6 +2,7 @@ import { ApiModule } from '@apis/api.module';
 import { ConfigModule, CronModule, DatabaseModule } from '@modules';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
@@ -23,6 +24,7 @@ import { I18NModule } from './modules/i18n/i18n.module';
 			maxListeners: 20
 		}),
 		I18NModule,
+		CqrsModule.forRoot(),
 		ApiModule
 	],
 	controllers: [AppController],

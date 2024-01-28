@@ -9,7 +9,7 @@ patchedDependencies:
     hash: apehh6iss2knorjr6y4gsto32a
     path: patches/@nestjs__common@10.3.1.patch
   '@nestjs/schematics@10.1.0':
-    hash: hg3nitkapoljvnzb337dqab2wy
+    hash: ewkzfy7mwvhxkgeuz4wonxgyk4
     path: patches/@nestjs__schematics@10.1.0.patch
 
 dependencies:
@@ -128,7 +128,7 @@ devDependencies:
     version: 10.3.0
   '@nestjs/schematics':
     specifier: ^10.0.0
-    version: 10.1.0(patch_hash=hg3nitkapoljvnzb337dqab2wy)(chokidar@3.5.3)(typescript@5.3.3)
+    version: 10.1.0(patch_hash=ewkzfy7mwvhxkgeuz4wonxgyk4)(chokidar@3.5.3)(typescript@5.3.3)
   '@nestjs/testing':
     specifier: ^10.0.0
     version: 10.3.1(@nestjs/common@10.3.1)(@nestjs/core@10.3.1)(@nestjs/platform-express@10.3.1)
@@ -1198,7 +1198,7 @@ packages:
       '@angular-devkit/core': 17.0.9(chokidar@3.5.3)
       '@angular-devkit/schematics': 17.0.9(chokidar@3.5.3)
       '@angular-devkit/schematics-cli': 17.0.9(chokidar@3.5.3)
-      '@nestjs/schematics': 10.1.0(patch_hash=hg3nitkapoljvnzb337dqab2wy)(chokidar@3.5.3)(typescript@5.3.3)
+      '@nestjs/schematics': 10.1.0(patch_hash=ewkzfy7mwvhxkgeuz4wonxgyk4)(chokidar@3.5.3)(typescript@5.3.3)
       chalk: 4.1.2
       chokidar: 3.5.3
       cli-table3: 0.6.3
@@ -1387,7 +1387,7 @@ packages:
       uuid: 9.0.1
     dev: false
 
-  /@nestjs/schematics@10.1.0(patch_hash=hg3nitkapoljvnzb337dqab2wy)(chokidar@3.5.3)(typescript@5.3.3):
+  /@nestjs/schematics@10.1.0(patch_hash=ewkzfy7mwvhxkgeuz4wonxgyk4)(chokidar@3.5.3)(typescript@5.3.3):
     resolution: {integrity: sha512-HQWvD3F7O0Sv3qHS2jineWxPLmBTLlyjT6VdSw2EAIXulitmV+ErxB3TCVQQORlNkl5p5cwRYWyBaOblDbNFIQ==}
     peerDependencies:
       typescript: '>=4.8.2'

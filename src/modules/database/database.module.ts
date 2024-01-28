@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { User1706412751363 } from './migrations/1706412751363-user';
 
 @Module({
 	imports: [
@@ -16,7 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 				schema: configService.get<string>('DB_SCHEMA'),
 				autoLoadEntities: true,
 				migrationsTableName: `migrations`,
-				migrations: [],
+				migrations: [User1706412751363],
 				migrationsRun: true,
 				synchronize: false
 			})

@@ -2,10 +2,10 @@ diff --git a/dist/lib/resource/files/ts/__name__.controller.__specFileSuffix__.t
 deleted file mode 100644
 index 17e58435f19ce66f9b8d4d82ff3736c43a908712..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.controller.ts b/dist/lib/resource/files/ts/__name__.controller.ts
-index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..c6c4f3ba3a2a24bbdaa24054a9fb930ac95dbcfd 100644
+index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..69546dc0c33784cd597bcaf558da87dc6d92d56f 100644
 --- a/dist/lib/resource/files/ts/__name__.controller.ts
 +++ b/dist/lib/resource/files/ts/__name__.controller.ts
-@@ -1,63 +1,48 @@
+@@ -1,63 +1,50 @@
 -<% if (crud && type === 'rest') { %>import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';<%
 -} else if (crud && type === 'microservice') { %>import { Controller } from '@nestjs/common';
 -import { MessagePattern, Payload } from '@nestjs/microservices';<%
@@ -16,15 +16,17 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..c6c4f3ba3a2a24bbdaa24054a9fb930a
 -import { Update<%= singular(classify(name)) %>Dto } from './dto/update-<%= singular(name) %>.dto';<% } %>
 -
 -<% if (type === 'rest') { %>@Controller('<%= dasherize(name) %>')<% } else { %>@Controller()<% } %>
-+import { ApiCreate, ApiDelete, ApiGetAll, ApiGetOne, ApiUpdate, HideController } from '@common';
++import { ApiCreate, ApiDelete, ApiGetAll, ApiGetOne, ApiUpdate, HideController, PaginationDto } from '@common';
 +import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 +import { CommandBus } from '@nestjs/cqrs';
 +import { ApiParam, ApiTags } from '@nestjs/swagger';
 +import { Create<%= classify(name) %>Dto } from './dto/create-<%= name %>.dto';
-+import { GetAll<%= classify(name) %>PaginatedDto } from './dto/get-all-<%= name %>-paginated.dto';
-+import { GetOne<%= classify(name) %>ByIdDto } from './dto/get-one-<%= name %>-by-id.dto';
-+import { Remove<%= classify(name) %>ByIdDto } from './dto/remove-<%= name %>-by-id.dto';
 +import { Update<%= classify(name) %>ByIdDto } from './dto/update-<%= name %>-by-id.dto';
++import { Create<%= classify(name) %>Command } from './commands/create-<%= name %>.command';
++import { GetAll<%= classify(name) %>PaginatedCommand } from './commands/get-all-<%= name %>-paginated.command';
++import { GetOne<%= classify(name) %>ByIdCommand } from './commands/get-one-<%= name %>-by-id.command';
++import { Remove<%= classify(name) %>ByIdCommand } from './commands/remove-<%= name %>-by-id.command';
++import { Update<%= classify(name) %>ByIdCommand } from './commands/update-<%= name %>-by-id.command';
 +import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
 +
 +@Controller('<%= name %>')
@@ -87,32 +89,32 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..c6c4f3ba3a2a24bbdaa24054a9fb930a
 +	@Post()
 +	@ApiCreate(<%= classify(name) %>Entity, '<%= classify(name) %>')
 +	create(@Body() create<%= classify(name) %>Dto: Create<%= classify(name) %>Dto) {
-+		return this.commandBus.execute(new Create<%= classify(name) %>Dto(create<%= classify(name) %>Dto));
++		return this.commandBus.execute(new Create<%= classify(name) %>Command({ data: create<%= classify(name) %>Dto }));
 +	}
 +
 +	@Get()
 +	@ApiGetAll(<%= classify(name) %>Entity, '<%= classify(name) %>')
-+	getAll(@Query() query: GetAll<%= classify(name) %>PaginatedDto) {
-+		return this.commandBus.execute(new GetAll<%= classify(name) %>PaginatedDto(query));
++	getAll(@Query() query: PaginationDto) {
++		return this.commandBus.execute(new GetAll<%= classify(name) %>PaginatedCommand({ query }));
 +	}
 +
 +	@Get(':id')
 +	@ApiGetOne(<%= classify(name) %>Entity, '<%= classify(name) %>')
 +	@ApiParam({ name: 'id', description: 'Truyền all nếu muốn lấy tất cả' })
 +	getOne(@Param('id') id: string) {
-+		return this.commandBus.execute(new GetOne<%= classify(name) %>ByIdDto({ id }));
++		return this.commandBus.execute(new GetOne<%= classify(name) %>ByIdCommand({ id }));
 +	}
 +
 +	@Patch(':id')
 +	@ApiUpdate(<%= classify(name) %>Entity, '<%= classify(name) %>')
 +	update(@Param('id') id: string, @Body() update<%= classify(name) %>Dto: Update<%= classify(name) %>ByIdDto) {
-+		return this.commandBus.execute(new Update<%= classify(name) %>ByIdDto({ ...update<%= classify(name) %>Dto, id }));
++		return this.commandBus.execute(new Update<%= classify(name) %>ByIdCommand({ id, data: update<%= classify(name) %>Dto }));
 +	}
 +
 +	@Delete(':id')
 +	@ApiDelete(<%= classify(name) %>Entity, '<%= classify(name) %>')
 +	remove(@Param('id') id: string) {
-+		return this.commandBus.execute(new Remove<%= classify(name) %>ByIdDto({ id }));
++		return this.commandBus.execute(new Remove<%= classify(name) %>ByIdCommand({ id }));
 +	}
  }
 diff --git a/dist/lib/resource/files/ts/__name__.interface.ts b/dist/lib/resource/files/ts/__name__.interface.ts
@@ -209,75 +211,95 @@ index 21943aa0987dd8dd020596bede4f801c686bff6d..acdc2226a24787525b59286983d20b71
 +		super(<%= lowercased(name) %>Repo);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..303ec6162f98ba800d516689a90bef723b1491d0 100644
---- a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-+++ b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-@@ -1 +1,5 @@
--export class Create<%= singular(classify(name)) %>Dto {}
-+export class Create<%= classify(name) %>Dto {
-+	constructor(data: Create<%= classify(name) %>Dto) {
+diff --git a/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts b/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..bb3ecec19816bb3bac33a5ab985c0173c84d1bc5
+--- /dev/null
++++ b/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts
+@@ -0,0 +1,9 @@
++import { Create<%= classify(name) %>Dto } from '../dto/create-<%= name %>.dto';
++
++export class Create<%= classify(name) %>Command {
++	data!: Create<%= classify(name) %>Dto;
++
++	constructor(data: Create<%= classify(name) %>Command) {
 +		Object.assign(this, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts
+diff --git a/dist/lib/resource/files/ts/commands/get-all-__name@singular__-paginated.command.ts b/dist/lib/resource/files/ts/commands/get-all-__name@singular__-paginated.command.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..e2a3d2ef6807b52e26c64c20d406b2569aa8117f
+index 0000000000000000000000000000000000000000..9442c652a6a9fd2b8b3dd8412b8ba4a50a3ae086
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/dto/get-all-__name@singular__-paginated.dto.ts
-@@ -0,0 +1,8 @@
++++ b/dist/lib/resource/files/ts/commands/get-all-__name@singular__-paginated.command.ts
+@@ -0,0 +1,9 @@
 +import { PaginationDto } from '@common';
 +
-+export class GetAll<%= classify(name) %>PaginatedDto extends PaginationDto {
-+	constructor(data: GetAll<%= classify(name) %>PaginatedDto) {
-+		super();
++export class GetAll<%= classify(name) %>PaginatedCommand {
++	query!: PaginationDto;
++
++	constructor(data: GetAll<%= classify(name) %>PaginatedCommand) {
 +		Object.assign(this, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/dto/get-one-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/get-one-__name@singular__-by-id.dto.ts
+diff --git a/dist/lib/resource/files/ts/commands/get-one-__name@singular__-by-id.command.ts b/dist/lib/resource/files/ts/commands/get-one-__name@singular__-by-id.command.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..09dee8758ce25152de27754512b6ed1c7055cd11
+index 0000000000000000000000000000000000000000..203b7b4099d02ad7369785bbed5a24a40b60fc2a
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/dto/get-one-__name@singular__-by-id.dto.ts
++++ b/dist/lib/resource/files/ts/commands/get-one-__name@singular__-by-id.command.ts
 @@ -0,0 +1,7 @@
-+export class GetOne<%= classify(name) %>ByIdDto {
++export class GetOne<%= classify(name) %>ByIdCommand {
 +	id!: string;
 +
-+	constructor(data: GetOne<%= classify(name) %>ByIdDto) {
++	constructor(data: GetOne<%= classify(name) %>ByIdCommand) {
 +		Object.assign(this, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/dto/remove-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/remove-__name@singular__-by-id.dto.ts
+diff --git a/dist/lib/resource/files/ts/commands/remove-__name@singular__-by-id.command.ts b/dist/lib/resource/files/ts/commands/remove-__name@singular__-by-id.command.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d1fb89b41029aeaedd22861b07df4856aee3e10
+index 0000000000000000000000000000000000000000..b4a39483e712e1509b77428fc441a7dbc3685932
 --- /dev/null
-+++ b/dist/lib/resource/files/ts/dto/remove-__name@singular__-by-id.dto.ts
++++ b/dist/lib/resource/files/ts/commands/remove-__name@singular__-by-id.command.ts
 @@ -0,0 +1,7 @@
-+export class Remove<%= classify(name) %>ByIdDto {
++export class Remove<%= classify(name) %>ByIdCommand {
 +	id!: string;
 +
-+	constructor(data: Remove<%= classify(name) %>ByIdDto) {
++	constructor(data: Remove<%= classify(name) %>ByIdCommand) {
 +		Object.assign(this, data);
 +	}
 +}
+diff --git a/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts b/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..e60ca0522581208617e9b5537c64dfece9f0730c
+--- /dev/null
++++ b/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts
+@@ -0,0 +1,10 @@
++import { Update<%= classify(name) %>ByIdDto } from '../dto/update-<%= name %>-by-id.dto';
++
++export class Update<%= classify(name) %>ByIdCommand {
++	id!: string;
++	data!: Update<%= classify(name) %>ByIdDto;
++
++	constructor(data: Update<%= classify(name) %>ByIdCommand) {
++		Object.assign(this, data);
++	}
++}
+diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
+index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..59b6b6c9d48e88f2ef96d9aa2aaadda83934d841 100644
+--- a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
++++ b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
+@@ -1 +1 @@
+-export class Create<%= singular(classify(name)) %>Dto {}
++export class Create<%= classify(name) %>Dto {}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..8d40a675d99cf082ee6af8aafc39dcb671ef95a4
+index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018eaf4838b53
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
-@@ -0,0 +1,12 @@
-+import { ApiHideProperty, PartialType } from '@nestjs/swagger';
+@@ -0,0 +1,4 @@
++import { PartialType } from '@nestjs/swagger';
 +import { Create<%= classify(name) %>Dto } from './create-<%= name %>.dto';
 +
-+export class Update<%= classify(name) %>ByIdDto extends PartialType(Create<%= classify(name) %>Dto) {
-+	@ApiHideProperty()
-+	id!: string;
-+
-+	constructor(data: Update<%= classify(name) %>ByIdDto) {
-+		super();
-+		Object.assign(this, data);
-+	}
-+}
++export class Update<%= classify(name) %>ByIdDto extends PartialType(Create<%= classify(name) %>Dto) {}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
@@ -299,68 +321,68 @@ index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e
 +export class <%= classify(name) %>Entity extends BaseEntity {}
 diff --git a/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..20f742743a8c39e6f8f8e82594a592ca985c2084
+index 0000000000000000000000000000000000000000..4cd62bb8c47fefcb2a945a5b2c0eac773d865d36
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 @@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { Create<%= classify(name) %>Dto } from '../dto/create-<%= name %>.dto';
++import { Create<%= classify(name) %>Command } from '../commands/create-<%= name %>.command';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(Create<%= classify(name) %>Dto)
-+export class Create<%= classify(name) %>Handler implements ICommandHandler<Create<%= classify(name) %>Dto> {
++@CommandHandler(Create<%= classify(name) %>Command)
++export class Create<%= classify(name) %>Handler implements ICommandHandler<Create<%= classify(name) %>Command> {
 +	private logger = new Logger(Create<%= classify(name) %>Handler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: Create<%= classify(name) %>Dto) {
++	async execute(command: Create<%= classify(name) %>Command) {
 +		this.logger.debug('execute');
-+		const {} = command;
-+		return this.<%= lowercased(name) %>Service.create(command);
++		const { data } = command;
++		return this.<%= lowercased(name) %>Service.create(data);
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts b/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..be5f045bbf9f26124d1d4f21a65616e908b6ab12
+index 0000000000000000000000000000000000000000..6ed046b6fc78f17e46cec0b7ce10f2bc49d1d28a
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/handlers/get-all-__name__-paginated.handler.ts
 @@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { GetAll<%= classify(name) %>PaginatedDto } from '../dto/get-all-<%= name %>-paginated.dto';
++import { GetAll<%= classify(name) %>PaginatedCommand } from '../commands/get-all-<%= name %>-paginated.command';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(GetAll<%= classify(name) %>PaginatedDto)
-+export class GetAll<%= classify(name) %>PaginatedHandler implements ICommandHandler<GetAll<%= classify(name) %>PaginatedDto> {
++@CommandHandler(GetAll<%= classify(name) %>PaginatedCommand)
++export class GetAll<%= classify(name) %>PaginatedHandler implements ICommandHandler<GetAll<%= classify(name) %>PaginatedCommand> {
 +	private logger = new Logger(GetAll<%= classify(name) %>PaginatedHandler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: GetAll<%= classify(name) %>PaginatedDto) {
++	async execute(command: GetAll<%= classify(name) %>PaginatedCommand) {
 +		this.logger.log(command);
-+		const {} = command;
-+		return this.<%= lowercased(name) %>Service.getAllPaginated(command);
++		const { query } = command;
++		return this.<%= lowercased(name) %>Service.getAllPaginated(query);
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/handlers/get-one-__name__-by-id.handler.ts b/dist/lib/resource/files/ts/handlers/get-one-__name__-by-id.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..7c35808b08ad3e75f9a256a2cbebab2abad438e6
+index 0000000000000000000000000000000000000000..c097658e1e452a0f59c5e01e66be906c63d4b5d1
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/handlers/get-one-__name__-by-id.handler.ts
 @@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { GetOne<%= classify(name) %>ByIdDto } from '../dto/get-one-<%= name %>-by-id.dto';
++import { GetOne<%= classify(name) %>ByIdCommand } from '../commands/get-one-<%= name %>-by-id.command';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(GetOne<%= classify(name) %>ByIdDto)
-+export class GetOne<%= classify(name) %>ByIdHandler implements ICommandHandler<GetOne<%= classify(name) %>ByIdDto> {
++@CommandHandler(GetOne<%= classify(name) %>ByIdCommand)
++export class GetOne<%= classify(name) %>ByIdHandler implements ICommandHandler<GetOne<%= classify(name) %>ByIdCommand> {
 +	private logger = new Logger(GetOne<%= classify(name) %>ByIdHandler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: GetOne<%= classify(name) %>ByIdDto) {
++	async execute(command: GetOne<%= classify(name) %>ByIdCommand) {
 +		this.logger.log(command);
 +		const { id } = command;
 +		return this.<%= lowercased(name) %>Service.getOneByIdOrFail(id);
@@ -368,22 +390,22 @@ index 0000000000000000000000000000000000000000..7c35808b08ad3e75f9a256a2cbebab2a
 +}
 diff --git a/dist/lib/resource/files/ts/handlers/remove-__name__-by-id.handler.ts b/dist/lib/resource/files/ts/handlers/remove-__name__-by-id.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..fec825584fd0f013a5f264ad18bd0dc4f6812fb7
+index 0000000000000000000000000000000000000000..2b9a4e5bf400888a00d58738c77639d0fb4be9c4
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/handlers/remove-__name__-by-id.handler.ts
 @@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { Remove<%= classify(name) %>ByIdDto } from '../dto/remove-<%= name %>-by-id.dto';
++import { Remove<%= classify(name) %>ByIdCommand } from '../commands/remove-<%= name %>-by-id.command';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(Remove<%= classify(name) %>ByIdDto)
-+export class Remove<%= classify(name) %>ByIdHandler implements ICommandHandler<Remove<%= classify(name) %>ByIdDto> {
++@CommandHandler(Remove<%= classify(name) %>ByIdCommand)
++export class Remove<%= classify(name) %>ByIdHandler implements ICommandHandler<Remove<%= classify(name) %>ByIdCommand> {
 +	private logger = new Logger(Remove<%= classify(name) %>ByIdHandler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: Remove<%= classify(name) %>ByIdDto) {
++	async execute(command: Remove<%= classify(name) %>ByIdCommand) {
 +		this.logger.log(command);
 +		const { id } = command;
 +		return this.<%= lowercased(name) %>Service.softRemoveById(id);
@@ -391,25 +413,25 @@ index 0000000000000000000000000000000000000000..fec825584fd0f013a5f264ad18bd0dc4
 +}
 diff --git a/dist/lib/resource/files/ts/handlers/update-__name__-by-id.handler.ts b/dist/lib/resource/files/ts/handlers/update-__name__-by-id.handler.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..6aedbde2d85c0881d40384f04e52f0cdd7545cfa
+index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f359c3e20
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/handlers/update-__name__-by-id.handler.ts
 @@ -0,0 +1,17 @@
 +import { Logger } from '@nestjs/common';
 +import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-+import { Update<%= classify(name) %>ByIdDto } from '../dto/update-<%= name %>-by-id.dto';
++import { Update<%= classify(name) %>ByIdCommand } from '../commands/update-<%= name %>-by-id.command';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +
-+@CommandHandler(Update<%= classify(name) %>ByIdDto)
-+export class Update<%= classify(name) %>ByIdHandler implements ICommandHandler<Update<%= classify(name) %>ByIdDto> {
++@CommandHandler(Update<%= classify(name) %>ByIdCommand)
++export class Update<%= classify(name) %>ByIdHandler implements ICommandHandler<Update<%= classify(name) %>ByIdCommand> {
 +	private logger = new Logger(Update<%= classify(name) %>ByIdHandler.name);
 +
 +	constructor(private readonly <%= lowercased(name) %>Service: I<%= classify(name) %>Service) {}
 +
-+	async execute(command: Update<%= classify(name) %>ByIdDto) {
++	async execute(command: Update<%= classify(name) %>ByIdCommand) {
 +		this.logger.log(command);
-+		const { id } = command;
-+		return this.<%= lowercased(name) %>Service.updateById(id, command);
++		const { id, data } = command;
++		return this.<%= lowercased(name) %>Service.updateById(id, data);
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.controller.__specFileSuffix__.ts
