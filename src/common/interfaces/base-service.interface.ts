@@ -1,5 +1,5 @@
 import { BaseEntity } from '@common';
-import { DeepPartial, FindOptionsWhere, SelectQueryBuilder, UpdateResult } from 'typeorm';
+import { DeepPartial, DeleteResult, FindOptionsWhere, SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /** 
@@ -89,6 +89,12 @@ export abstract class AbstractBaseService<T extends BaseEntity> {
 	 * @example service.removeById('uuid', { loadEagerRelations: false, errorMessage: 'Not found' } })
 	 */
 	abstract removeById(id: string, options?: Partial<FindOrFailOptions<T>>): Promise<T>;
+
+	/** Xoá tất cả record
+	 * @returns Promise<T>
+	 * @example service.removeAll()
+	 */
+	abstract removeAll(): Promise<DeleteResult>;
 	
 	/** Xoá mềm một record, nếu không tìm thấy, trả về lỗi NotFound
 	 * @param options Tùy chọn để lấy record
@@ -103,6 +109,12 @@ export abstract class AbstractBaseService<T extends BaseEntity> {
 	 * @example service.softRemoveById('uuid', { loadEagerRelations: false, errorMessage: 'Not found' } })
 	 */
 	abstract softRemoveById(id: string, options?: Partial<FindOrFailOptions<T>>): Promise<T>;
+
+	/** Xoá mềm tất cả record
+	 * @returns Promise<T>
+	 * @example service.softRemoveAll()
+	 */
+	abstract softRemoveAll(): Promise<DeleteResult>;
 	
 	/** Đếm record
 	 * @param options Tùy chọn để lấy record

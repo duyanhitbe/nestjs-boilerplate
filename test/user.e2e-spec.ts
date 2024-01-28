@@ -1,0 +1,124 @@
+import { CreateUserDto } from '@apis/user/dto/create-user.dto';
+import { UpdateUserByIdDto } from '@apis/user/dto/update-user-by-id.dto';
+import { IUserService } from '@apis/user/user.interface';
+import { INestApplication, VersioningType } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from 'src/app.module';
+import * as request from 'supertest';
+
+describe('UserController (e2e)', () => {
+	let app: INestApplication;
+	let httpServer: any;
+	let userService: IUserService;
+
+	beforeEach(async () => {
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			imports: [AppModule]
+		}).compile();
+
+		app = moduleFixture.createNestApplication();
+		httpServer = app.getHttpServer();
+		app.enableCors({
+			origin: true,
+			credentials: true
+		});
+		app.enableVersioning({
+			type: VersioningType.URI,
+			defaultVersion: '1'
+		});
+		await app.init();
+
+		//Remove all user
+		userService = app.get<IUserService>(IUserService);
+		await userService.softRemoveAll();
+	});
+
+	it('/v1/user (GET)', async () => {
+		const _user1 = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		const user2 = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		return request(httpServer)
+			.get('/v1/user')
+			.query({ limit: '1', page: '2' })
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.status).toEqual(200);
+				expect(body.message).toEqual('success');
+				expect(body.data?.length).toEqual(1);
+				expect(body.data?.[0].id).toEqual(user2.id);
+				expect(body.pagination.limit).toEqual(1);
+				expect(body.pagination.page).toEqual(2);
+				expect(body.pagination.total).toEqual(2);
+			});
+	});
+	it('/v1/user/:id (GET)', async () => {
+		const user = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		return request(httpServer)
+			.get(`/v1/user/${user.id}`)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.status).toEqual(200);
+				expect(body.message).toEqual('success');
+				expect(body.data.id).toEqual(user.id);
+				expect(body.data.username).toEqual(user.username);
+			});
+	});
+	it('/v1/user (POST)', () => {
+		const createUserData: CreateUserDto = {
+			username: 'user',
+			password: 'strongPassword'
+		};
+		return request(httpServer)
+			.post('/v1/user')
+			.send(createUserData)
+			.expect(201)
+			.then(({ body }) => {
+				expect(body.status).toEqual(201);
+				expect(body.message).toEqual('success');
+				expect(body.data.username).toEqual(createUserData.username);
+			});
+	});
+	it('/v1/user/:id (PATCH)', async () => {
+		const user = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		const updatedUsername = 'updatedUsername';
+		const updateUserData: UpdateUserByIdDto = {
+			username: updatedUsername
+		};
+		return request(httpServer)
+			.patch(`/v1/user/${user.id}`)
+			.send(updateUserData)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.status).toEqual(200);
+				expect(body.message).toEqual('success');
+				expect(body.data.id).toEqual(user.id);
+				expect(body.data.username).toEqual(updatedUsername);
+			});
+	});
+	it('/v1/user/:id (DELETE)', async () => {
+		const user = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		return request(httpServer)
+			.patch(`/v1/user/${user.id}`)
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.status).toEqual(200);
+				expect(body.message).toEqual('success');
+				expect(body.data.id).toEqual(user.id);
+				expect(body.data.username).toEqual(user.username);
+			});
+	});
+});

@@ -5,6 +5,7 @@ import { extend } from 'lodash';
 import {
 	And,
 	DeepPartial,
+	DeleteResult,
 	FindOptionsWhere,
 	ILike,
 	LessThanOrEqual,
@@ -176,6 +177,10 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 		return this.repository.remove(entity);
 	}
 
+	removeAll(): Promise<DeleteResult> {
+		return this.repository.delete({})
+	}
+
 	async softRemove(options: FindOrFailOptions<T>): Promise<T> {
 		const entity = await this.getOneOrFail(options);
 		return this.repository.softRemove(entity);
@@ -184,6 +189,10 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 	async softRemoveById(id: string, options?: Partial<FindOrFailOptions<T>>): Promise<T> {
 		const entity = await this.getOneByIdOrFail(id, options);
 		return this.repository.softRemove(entity);
+	}
+
+	softRemoveAll(): Promise<DeleteResult> {
+		return this.repository.softDelete({})
 	}
 
 	count(options: Partial<FindOptions<T>>) {
