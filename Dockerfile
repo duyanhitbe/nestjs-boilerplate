@@ -4,10 +4,12 @@ WORKDIR /app
 
 #Install @nestjs/cli
 RUN npm i -g @nestjs/cli
+RUN npm i -g pnpm
 
 #Install dependencies
 COPY package.json .
-RUN yarn
+COPY pnpm-lock.yaml .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
 #Build
 COPY . .
@@ -23,4 +25,4 @@ COPY --from=build /app/package.json /app/package.json
 
 EXPOSE 3000
 
-CMD ["yarn", "start:prod"]
+CMD ["pnpm", "run", "start:prod"]
