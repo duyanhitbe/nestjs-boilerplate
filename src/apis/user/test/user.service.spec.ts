@@ -1,9 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserEntity } from '../entities/user.entity';
 import { IUserService } from '../user.interface';
 import { UserService } from '../user.service';
-import { UserEntity } from '../entities/user.entity';
-import { UserRepository } from '../mocks/user.repository';
+
+const mockUserRepository = jest.fn().mockReturnValue({});
 
 describe('UserService', () => {
 	let service: IUserService;
@@ -17,7 +18,7 @@ describe('UserService', () => {
 				},
 				{
 					provide: getRepositoryToken(UserEntity),
-					useFactory: UserRepository
+					useValue: mockUserRepository
 				}
 			]
 		}).compile();
