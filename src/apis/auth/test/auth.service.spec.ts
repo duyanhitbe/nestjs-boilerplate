@@ -33,7 +33,8 @@ describe('AuthService', () => {
 	describe('getService', () => {
 		it('should return valid instance', async () => {
 			const instance = service.getService('user');
-			expect(instance).toBeInstanceOf(UserService);
+			expect(instance.validateUserById).toBeDefined();
+			expect(instance.validateUserByUsernamePassword).toBeDefined();
 		});
 	});
 });

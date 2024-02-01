@@ -2,19 +2,16 @@ import { PaginationDto } from '@common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserByIdDto } from '../dto/update-user-by-id.dto';
-import { UserEntity } from '../entities/user.entity';
 
 export const UserService = jest.fn().mockReturnValue({
-	create: async (dto: CreateUserDto): Promise<Partial<UserEntity>> => ({
+	create: jest.fn((dto: CreateUserDto) => ({
 		id: uuidv4(),
 		username: dto.username,
 		password: dto.password,
 		createdAt: new Date(),
 		updatedAt: new Date()
-	}),
-	getAllPaginated: async (
-		query: PaginationDto
-	): Promise<IPaginationResponse<Partial<UserEntity>>> => {
+	})),
+	getAllPaginated: jest.fn((query: PaginationDto) => {
 		const data = [
 			{
 				id: uuidv4(),
@@ -43,25 +40,39 @@ export const UserService = jest.fn().mockReturnValue({
 				total
 			}
 		};
-	},
-	getOneByIdOrFail: async (id: string) => ({
+	}),
+	getOneByIdOrFail: jest.fn((id: string) => ({
 		id,
 		username: 'username',
 		password: 'password',
 		createdAt: new Date(),
 		updatedAt: new Date()
-	}),
-	softRemoveById: async (id: string) => ({
+	})),
+	softRemoveById: jest.fn((id: string) => ({
 		id,
 		username: 'username',
 		password: 'password',
 		createdAt: new Date(),
 		updatedAt: new Date()
-	}),
-	updateById: async (id: string, data: UpdateUserByIdDto) => ({
+	})),
+	updateById: jest.fn((id: string, data: UpdateUserByIdDto) => ({
 		...data,
 		id,
 		createdAt: new Date(),
 		updatedAt: new Date()
-	})
+	})),
+	validateUserByUsernamePassword: jest.fn((username: string, password: string) => ({
+		id: uuidv4(),
+		username,
+		password,
+		createdAt: new Date(),
+		updatedAt: new Date()
+	})),
+	validateUserById: jest.fn((id: string) => ({
+		id,
+		username: 'username',
+		password: 'password',
+		createdAt: new Date(),
+		updatedAt: new Date()
+	}))
 });
