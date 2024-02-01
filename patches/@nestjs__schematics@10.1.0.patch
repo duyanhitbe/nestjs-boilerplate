@@ -434,69 +434,6 @@ index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f
 +		return this.<%= lowercased(name) %>Service.updateById(id, data);
 +	}
 +}
-diff --git a/dist/lib/resource/files/ts/mocks/__name__.service.ts b/dist/lib/resource/files/ts/mocks/__name__.service.ts
-new file mode 100644
-index 0000000000000000000000000000000000000000..cb7a6d76ee28a6b304d4a1cd5ebd9f0fa5591405
---- /dev/null
-+++ b/dist/lib/resource/files/ts/mocks/__name__.service.ts
-@@ -0,0 +1,57 @@
-+import { PaginationDto } from '@common';
-+import { v4 as uuidv4 } from 'uuid';
-+import { Create<%= classify(name) %>Dto } from '../dto/create-<%= name %>.dto';
-+import { Update<%= classify(name) %>ByIdDto } from '../dto/update-<%= name %>-by-id.dto';
-+import { <%= classify(name) %>Entity } from '../entities/<%= name %>.entity';
-+
-+export const <%= classify(name) %>Service = jest.fn().mockReturnValue({
-+	create: async (dto: Create<%= classify(name) %>Dto): Promise<Partial<<%= classify(name) %>Entity>> => ({
-+		id: uuidv4(),
-+		createdAt: new Date(),
-+		updatedAt: new Date()
-+	}),
-+	getAllPaginated: async (
-+		query: PaginationDto
-+	): Promise<IPaginationResponse<Partial<<%= classify(name) %>Entity>>> => {
-+		const data = [
-+			{
-+				id: uuidv4(),
-+				createdAt: new Date(),
-+				updatedAt: new Date()
-+			},
-+			{
-+				id: uuidv4(),
-+				createdAt: new Date(),
-+				updatedAt: new Date()
-+			}
-+		];
-+		const limit = +(query.limit || 10);
-+		const page = +(query.page || 10);
-+		const offset = limit * (page - 1);
-+		const total = data.length;
-+		return {
-+			data: data.slice(offset, limit * page),
-+			pagination: {
-+				limit,
-+				page,
-+				total
-+			}
-+		};
-+	},
-+	getOneByIdOrFail: async (id: string) => ({
-+		id,
-+		createdAt: new Date(),
-+		updatedAt: new Date()
-+	}),
-+	softRemoveById: async (id: string) => ({
-+		id,
-+		createdAt: new Date(),
-+		updatedAt: new Date()
-+	}),
-+	updateById: async (id: string, data: Update<%= classify(name) %>ByIdDto) => ({
-+		...data,
-+		id,
-+		createdAt: new Date(),
-+		updatedAt: new Date()
-+	})
-+});
 diff --git a/dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.gateway.__specFileSuffix__.ts
 similarity index 78%
 rename from dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts
