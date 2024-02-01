@@ -1,28 +1,16 @@
-FROM node:18-alpine as build
-
+FROM node:20-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY . /app
 WORKDIR /app
 
-#Install @nestjs/cli
-RUN npm i -g @nestjs/cli
-RUN npm i -g pnpm
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts
+RUN pnpm run build
 
-#Install dependencies
-COPY package.json .
-COPY pnpm-lock.yaml .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
-
-#Build
-COPY . .
-RUN yarn build
-
-FROM node:18-alpine as production
-
-WORKDIR /app
-
+FROM base
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
-COPY --from=build /app/package.json /app/package.json
-
 EXPOSE 3000
-
-CMD ["pnpm", "run", "start:prod"]
+CMD [ "pnpm", "start:prod" ]
