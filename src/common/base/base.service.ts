@@ -18,6 +18,7 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
 import { AbstractBaseService } from '../interfaces/base-service.interface';
 
 /** 
+ * BaseService là một class bao gồm các method viết sẵn phục vụ cho việc thêm xóa sửa. Nó được kế thừa bởi class khác.
  * @template T Kiểu dữ liệu của record
  */
 export abstract class BaseService<T extends BaseEntity> extends AbstractBaseService<T> {

@@ -1,7 +1,8 @@
 import { JwtSignOptions } from "@nestjs/jwt";
 
 export abstract class IJwtService {
-    /** Generate access token
+    /** 
+	 * Generate access token
 	 * @param payload Data truyền vào token
 	 * @param options Những cài đặt về thời gian hết hạn...
 	 * @return Promise<string>
@@ -9,7 +10,8 @@ export abstract class IJwtService {
 	 */
 	abstract sign(payload: JwtPayload, options?: Omit<JwtSignOptions, 'secret'>): Promise<string>;
 
-    /** Verify access token
+    /** 
+	 * Verify access token
      * @param token Access token
      * @return Promise<JwtPayload>
      * @example const payload = await this.jwtService.verify(token);

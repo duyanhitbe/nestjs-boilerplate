@@ -3,7 +3,6 @@ export * from './base/base.entity';
 export * from './base/base.service';
 export * from './base/base.swagger';
 
-export * from './decorators/hide-controller.decorator';
 export * from './decorators/use-env.decorator';
 export * from './decorators/use-user-guard.decorator';
 export * from './decorators/user.decorator';
@@ -23,6 +22,8 @@ export * from './helpers/pagination.helper';
 export * from './helpers/phone.helper';
 export * from './helpers/random.helper';
 export * from './helpers/validation.helper';
+
+export * from './interceptors/format-response.interceptor';
 
 export * from './interfaces/base-service.interface';
 

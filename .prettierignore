@@ -1,3 +1,4 @@
 *.interface.ts
 src/common/base/base.service.ts
 src/modules/database/migrations/*
+src/modules/i18n/generated/i18n.generated.ts
