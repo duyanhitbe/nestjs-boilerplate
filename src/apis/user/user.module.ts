@@ -6,18 +6,18 @@ import { GetAllUserPaginatedHandler } from './handlers/get-all-user-paginated.ha
 import { GetOneUserByIdHandler } from './handlers/get-one-user-by-id.handler';
 import { RemoveUserByIdHandler } from './handlers/remove-user-by-id.handler';
 import { UpdateUserByIdHandler } from './handlers/update-user-by-id.handler';
-import { UserController } from './user.controller';
 import { IUserService } from './user.interface';
+import { UserResolver } from './user.resolver';
 import { UserService } from './user.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([UserEntity])],
-	controllers: [UserController],
 	providers: [
 		{
 			provide: IUserService,
 			useClass: UserService
 		},
+		UserResolver,
 		CreateUserHandler,
 		GetAllUserPaginatedHandler,
 		GetOneUserByIdHandler,

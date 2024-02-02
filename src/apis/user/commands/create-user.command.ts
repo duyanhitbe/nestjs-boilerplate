@@ -1,7 +1,7 @@
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserInput } from '../dto/create-user.input';
 
 export class CreateUserCommand {
-	data!: CreateUserDto;
+	data!: CreateUserInput;
 
 	constructor(data: CreateUserCommand) {
 		Object.assign(this, data);

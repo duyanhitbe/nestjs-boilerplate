@@ -133,8 +133,8 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 		const select = options.select;
 		const withDeleted = options.withDeleted;
 		const where = options.where || [];
-		const filter = JSON.parse(options.filter || '{}');
-		const order = JSON.parse(options.sort || '{}');
+		const filter = options.filter || {};
+		const order = options.order || {};
 		const relations = options.relations;
 		const limit = +(options.limit || 10);
 		const page = +(options.page || 1);

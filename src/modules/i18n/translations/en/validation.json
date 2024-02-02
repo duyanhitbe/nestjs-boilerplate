@@ -1,5 +1,7 @@
 {
 	"IS_STRING": "{property} must be a string",
+	"IS_JSON": "{property} must be a json",
+	"IS_OBJECT": "{property} must be an object",
 	"IS_NOT_EMPTY": "{property} should not empty",
 	"IS_NUMBER": "{property} mus be a number",
 	"IS_EMAIL": "{property} must be an email",

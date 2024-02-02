@@ -1,5 +1,7 @@
 {
     "IS_STRING": "{property} phải là một chuỗi",
+    "IS_JSON": "{property} phải là một json",
+    "IS_OBJECT": "{property} phải là một object",
     "IS_NOT_EMPTY": "{property} không được là chuỗi rỗng",
     "IS_NUMBER": "{property} phải là một số",
     "IS_EMAIL": "{property} không đúng định dạng email",

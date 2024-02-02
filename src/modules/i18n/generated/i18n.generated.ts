@@ -4,6 +4,8 @@ import { Path } from "nestjs-i18n";
 export type I18nTranslations = {
     "validation": {
         "IS_STRING": string;
+        "IS_JSON": string;
+        "IS_OBJECT": string;
         "IS_NOT_EMPTY": string;
         "IS_NUMBER": string;
         "IS_EMAIL": string;

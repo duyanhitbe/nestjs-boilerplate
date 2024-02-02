@@ -1,10 +1,10 @@
 import { PaginationDto } from '@common';
 import { v4 as uuidv4 } from 'uuid';
-import { CreateUserDto } from '../dto/create-user.dto';
+import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserByIdDto } from '../dto/update-user-by-id.dto';
 
 export const UserService = jest.fn().mockReturnValue({
-	create: jest.fn((dto: CreateUserDto) => ({
+	create: jest.fn((dto: CreateUserInput) => ({
 		id: uuidv4(),
 		username: dto.username,
 		password: dto.password,

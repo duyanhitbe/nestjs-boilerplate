@@ -10,7 +10,7 @@ declare global {
 		/** Nối bảng */
 		relations?: string[];
 		/** Lọc theo field */
-		filter?: string;
+		filter?: FindOptionsWhere<UserEntity> | FindOptionsWhere<UserEntity>[];
 		/** Bật tắt eager */
 		loadEagerRelations?: boolean;
 		/** Chứa những dữ liệu đã bị xóa */
@@ -26,19 +26,9 @@ declare global {
 
 	type FindWithPaginationOptions<T extends BaseEntity> = Partial<FindOptions<T>> & {
 		/** Số item trong một trang */
-		limit?: string;
+		limit?: number;
 		/** Số trang hiện tại */
-		page?: string;
-		/**
-		 * Sắp xếp
-		 * @example {"createdAt": "ASC"}
-		 */
-		sort?: string;
-		/**
-		 * Lọc
-		 * @examples { "name": "ABC" }
-		 */
-		filter?: string;
+		page?: number;
 	};
 
 	type IPaginationResponse<T> = {

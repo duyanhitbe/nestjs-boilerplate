@@ -1,7 +1,7 @@
-import { PaginationDto } from '@common';
+import { GetAllUserArgs } from '../user.schema';
 
 export class GetAllUserPaginatedCommand {
-	query!: PaginationDto;
+	query!: GetAllUserArgs;
 
 	constructor(data: GetAllUserPaginatedCommand) {
 		Object.assign(this, data);
