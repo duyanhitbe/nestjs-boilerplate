@@ -31,7 +31,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 
 	getOne(options: FindOptions<T>): Promise<T | null> {
 		const { where } = options;
-		return this.model.findOne(where);
+		return this.model.findOne({ ...where, deletedAt: null });
 	}
 
 	async getOneOrFail(options: FindOrFailOptions<T>): Promise<T> {
@@ -42,7 +42,8 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	}
 
 	getOneById(id: string, options?: Partial<FindOptions<T>>): Promise<T | null> {
-		return this.model.findById(id);
+		const where = { id, deletedAt: null }
+		return this.model.findOne(where);
 	}
 
 	async getOneByIdOrFail(id: string, options?: Partial<FindOrFailOptions<T>>): Promise<T> {
@@ -65,11 +66,11 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 
 	getAll(options: Partial<FindOptions<T>>): Promise<T[]> {
 		const { where } = options;
-		return this.model.find(where || {});
+		return this.model.find({ ...where, deletedAt: null } || { deletedAt: null });
 	}
 
 	async getAllPaginated(options: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>> {
-		const where = options.where || {};
+		const where = { ...options.where, deletedAt: null };
 		const limit = +(options.limit || 10);
 		const page = +(options.page || 1);
 		const skip = limit === -1 ? 0 : limit * (+page - 1);
@@ -92,7 +93,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	}
 
 	async updateOne(options: FindOrFailOptions<T>, data: UpdateQuery<T>): Promise<T> {
-		const where = options.where || {};
+		const where = { ...options.where, deletedAt: null };
 		const record = await this.getOneOrFail(options);
 		await this.model.findOneAndUpdate(where, data)
 		const updatedRecord = extend<T>(record, data)
@@ -100,7 +101,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	}
 
 	async updateById(id: string, data: UpdateQuery<T>, options?: Partial<FindOrFailOptions<T>>): Promise<T> {
-		const where = { _id: id };
+		const where = { _id: id, deletedAt: null };
 		const record = await this.getOneOrFail({ ...options, where });
 		await this.model.findOneAndUpdate(where, data)
 		const updatedRecord = extend<T>(record, data)
@@ -110,12 +111,12 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	async remove(options: FindOrFailOptions<T>): Promise<T> {
 		const { where } = options;
 		const record = await this.getOneOrFail(options);
-		await this.model.deleteOne(where);
+		await this.model.deleteOne({ ...where, deletedAt: null });
 		return record;
 	}
 
 	async removeById(id: string, options?: Partial<FindOrFailOptions<T>>): Promise<T> {
-		const where = { _id: id };
+		const where = { _id: id, deletedAt: null };
 		const record = await this.getOneByIdOrFail(id, options);
 		await this.model.deleteOne(where);
 		return record;
@@ -145,17 +146,17 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 
 	count(options: Partial<FindOptions<T>>) {
 		const { where } = options;
-		return this.model.countDocuments(where);
+		return this.model.countDocuments({ ...where, deletedAt: null });
 	}
 
 	increment(where: FilterQuery<T>, field: string, value: number): Promise<T> {
 		//@ts-ignore
-		return this.model.findOneAndUpdate(where, { $inc: { [field]: value } }, { new: true })
+		return this.model.findOneAndUpdate({ ...where, deletedAt: null }, { $inc: { [field]: value } }, { new: true })
 	}
 
 	decrement(where: FilterQuery<T>, field: string, value: number): Promise<T> {
 		//@ts-ignore
-		return this.model.findOneAndUpdate(where, { $inc: { [field]: -value } }, { new: true })
+		return this.model.findOneAndUpdate({ ...where, deletedAt: null }, { $inc: { [field]: -value } }, { new: true })
 	}
 
 	aggregate(pipeline?: PipelineStage[], options?: AggregateOptions): Aggregate<Array<T>> {
