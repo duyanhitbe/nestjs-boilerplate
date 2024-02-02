@@ -42,7 +42,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	}
 
 	getOneById(id: string, options?: Partial<FindOptions<T>>): Promise<T | null> {
-		const where = { id, deletedAt: null }
+		const where = { _id: id, deletedAt: null }
 		return this.model.findOne(where);
 	}
 
