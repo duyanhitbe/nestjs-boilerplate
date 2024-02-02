@@ -30,7 +30,7 @@ describe('UserController (e2e)', () => {
 
 		//Remove all user
 		userService = app.get<IUserService>(IUserService);
-		await userService.softRemoveAll();
+		await userService.removeAll();
 	});
 
 	it('/v1/user (GET)', async () => {

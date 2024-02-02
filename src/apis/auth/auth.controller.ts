@@ -1,4 +1,4 @@
-import { UserEntity } from '@apis/user/entities/user.entity';
+import { UserModel } from '@apis/user/models/user.model';
 import { ApiController, User } from '@common';
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -17,7 +17,7 @@ export class AuthController {
 	@Post('user/login')
 	@HttpCode(200)
 	@ApiLogin('user')
-	loginUser(@Body() _loginUserDto: LoginUserDto, @User() user: UserEntity) {
+	loginUser(@Body() _loginUserDto: LoginUserDto, @User() user: UserModel) {
 		return this.commandBus.execute(new LoginCommand({ user }));
 	}
 }

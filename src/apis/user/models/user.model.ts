@@ -1,8 +1,6 @@
-import { BaseModel, Schema } from '@common';
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
-import { ApiHideProperty } from '@nestjs/swagger';
+import { BaseModel, Schema, createSchema } from '@common';
+import { Prop } from '@nestjs/mongoose';
 import { hash } from 'argon2';
-import { Exclude } from 'class-transformer';
 import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<UserModel> & BaseModel;
@@ -14,13 +12,11 @@ export class UserModel extends BaseModel {
 	username!: string;
 
 	/** Mật khẩu */
-	@ApiHideProperty()
 	@Prop()
-	@Exclude()
 	password!: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserModel);
+export const UserSchema = createSchema(UserModel);
 
 UserSchema.pre<UserDocument>('save', async function (next) {
 	if (this.password) {

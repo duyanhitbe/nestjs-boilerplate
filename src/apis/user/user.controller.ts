@@ -5,21 +5,9 @@ import {
 	ApiGetAll,
 	ApiGetOne,
 	ApiUpdate,
-	IPaginationResponse,
-	MongooseClassSerializerInterceptor,
 	PaginationDto
 } from '@common';
-import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Param,
-	Patch,
-	Post,
-	Query,
-	UseInterceptors
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiParam } from '@nestjs/swagger';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -29,43 +17,46 @@ import { RemoveUserByIdCommand } from './commands/remove-user-by-id.command';
 import { UpdateUserByIdCommand } from './commands/update-user-by-id.command';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserByIdDto } from './dto/update-user-by-id.dto';
-import { UserEntity } from './entities/user.entity';
-import { UserModel } from './models/user.model';
+import { UserResponse } from './dto/user-response.dto';
+import { UseUserInterceptor, UseUserPaginatedInterceptor } from './user.interceptor';
 
 @Controller('user')
 @ApiController('User')
-@UseInterceptors(MongooseClassSerializerInterceptor(UserModel))
 export class UserController {
 	constructor(private readonly commandBus: CommandBus) {}
 
 	@Post()
-	@ApiCreate(UserEntity, 'User')
+	@ApiCreate(UserResponse, 'User')
+	@UseUserInterceptor()
 	create(@Body() createUserDto: CreateUserDto) {
 		return this.commandBus.execute(new CreateUserCommand({ data: createUserDto }));
 	}
 
 	@Get()
-	@UseInterceptors(MongooseClassSerializerInterceptor(IPaginationResponse<UserModel>))
-	@ApiGetAll(UserEntity, 'User')
+	@ApiGetAll(UserResponse, 'User')
+	@UseUserPaginatedInterceptor()
 	getAll(@Query() query: PaginationDto) {
 		return this.commandBus.execute(new GetAllUserPaginatedCommand({ query }));
 	}
 
 	@Get(':id')
-	@ApiGetOne(UserEntity, 'User')
+	@ApiGetOne(UserResponse, 'User')
 	@ApiParam({ name: 'id', description: 'Truyền all nếu muốn lấy tất cả' })
+	@UseUserInterceptor()
 	getOne(@Param('id') id: string) {
 		return this.commandBus.execute(new GetOneUserByIdCommand({ id }));
 	}
 
 	@Patch(':id')
-	@ApiUpdate(UserEntity, 'User')
+	@ApiUpdate(UserResponse, 'User')
+	@UseUserInterceptor()
 	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserByIdDto) {
 		return this.commandBus.execute(new UpdateUserByIdCommand({ id, data: updateUserDto }));
 	}
 
 	@Delete(':id')
-	@ApiDelete(UserEntity, 'User')
+	@ApiDelete(UserResponse, 'User')
+	@UseUserInterceptor()
 	remove(@Param('id') id: string) {
 		return this.commandBus.execute(new RemoveUserByIdCommand({ id }));
 	}

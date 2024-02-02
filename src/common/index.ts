@@ -1,5 +1,4 @@
 export * from './base/base.dto';
-export * from './base/base.entity';
 export * from './base/base.model';
 export * from './base/base.service';
 export * from './base/base.swagger';
@@ -25,7 +24,6 @@ export * from './helpers/random.helper';
 export * from './helpers/validation.helper';
 
 export * from './interceptors/format-response.interceptor';
-export * from './interceptors/mongoose-serialize.interceptor';
 
 export * from './interfaces/base-service.interface';
 
