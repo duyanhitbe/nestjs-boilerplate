@@ -2,10 +2,10 @@ diff --git a/dist/lib/resource/files/ts/__name__.controller.__specFileSuffix__.t
 deleted file mode 100644
 index 17e58435f19ce66f9b8d4d82ff3736c43a908712..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.controller.ts b/dist/lib/resource/files/ts/__name__.controller.ts
-index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792def21b0b 100644
+index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..8089a203ca3e567fe4f98d1dc37684e7273fb30e 100644
 --- a/dist/lib/resource/files/ts/__name__.controller.ts
 +++ b/dist/lib/resource/files/ts/__name__.controller.ts
-@@ -1,63 +1,49 @@
+@@ -1,63 +1,63 @@
 -<% if (crud && type === 'rest') { %>import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';<%
 -} else if (crud && type === 'microservice') { %>import { Controller } from '@nestjs/common';
 -import { MessagePattern, Payload } from '@nestjs/microservices';<%
@@ -16,18 +16,27 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792
 -import { Update<%= singular(classify(name)) %>Dto } from './dto/update-<%= singular(name) %>.dto';<% } %>
 -
 -<% if (type === 'rest') { %>@Controller('<%= dasherize(name) %>')<% } else { %>@Controller()<% } %>
-+import { ApiCreate, ApiDelete, ApiGetAll, ApiGetOne, ApiUpdate, PaginationDto, ApiController } from '@common';
++import {
++	ApiController,
++	ApiCreate,
++	ApiDelete,
++	ApiGetAll,
++	ApiGetOne,
++	ApiUpdate,
++	PaginationDto
++} from '@common';
 +import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 +import { CommandBus } from '@nestjs/cqrs';
 +import { ApiParam } from '@nestjs/swagger';
-+import { Create<%= classify(name) %>Dto } from './dto/create-<%= name %>.dto';
-+import { Update<%= classify(name) %>ByIdDto } from './dto/update-<%= name %>-by-id.dto';
 +import { Create<%= classify(name) %>Command } from './commands/create-<%= name %>.command';
 +import { GetAll<%= classify(name) %>PaginatedCommand } from './commands/get-all-<%= name %>-paginated.command';
 +import { GetOne<%= classify(name) %>ByIdCommand } from './commands/get-one-<%= name %>-by-id.command';
 +import { Remove<%= classify(name) %>ByIdCommand } from './commands/remove-<%= name %>-by-id.command';
 +import { Update<%= classify(name) %>ByIdCommand } from './commands/update-<%= name %>-by-id.command';
-+import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++import { Create<%= classify(name) %>Dto } from './dto/create-<%= name %>.dto';
++import { Update<%= classify(name) %>ByIdDto } from './dto/update-<%= name %>-by-id.dto';
++import { <%= classify(name) %>Response } from './dto/<%= name %>-response.dto';
++import { Use<%= classify(name) %>Interceptor, Use<%= classify(name) %>PaginatedInterceptor } from './<%= name %>.interceptor';
 +
 +@Controller('<%= name %>')
 +@ApiController('<%= classify(name) %>')
@@ -86,59 +95,114 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792
 +	constructor(private readonly commandBus: CommandBus) {}
 +
 +	@Post()
-+	@ApiCreate(<%= classify(name) %>Entity, '<%= classify(name) %>')
++	@ApiCreate(<%= classify(name) %>Response, '<%= classify(name) %>')
++	@Use<%= classify(name) %>Interceptor()
 +	create(@Body() create<%= classify(name) %>Dto: Create<%= classify(name) %>Dto) {
 +		return this.commandBus.execute(new Create<%= classify(name) %>Command({ data: create<%= classify(name) %>Dto }));
 +	}
 +
 +	@Get()
-+	@ApiGetAll(<%= classify(name) %>Entity, '<%= classify(name) %>')
++	@ApiGetAll(<%= classify(name) %>Response, '<%= classify(name) %>')
++	@Use<%= classify(name) %>PaginatedInterceptor()
 +	getAll(@Query() query: PaginationDto) {
 +		return this.commandBus.execute(new GetAll<%= classify(name) %>PaginatedCommand({ query }));
 +	}
 +
 +	@Get(':id')
-+	@ApiGetOne(<%= classify(name) %>Entity, '<%= classify(name) %>')
++	@ApiGetOne(<%= classify(name) %>Response, '<%= classify(name) %>')
 +	@ApiParam({ name: 'id', description: 'Truyền all nếu muốn lấy tất cả' })
++	@Use<%= classify(name) %>Interceptor()
 +	getOne(@Param('id') id: string) {
 +		return this.commandBus.execute(new GetOne<%= classify(name) %>ByIdCommand({ id }));
 +	}
 +
 +	@Patch(':id')
-+	@ApiUpdate(<%= classify(name) %>Entity, '<%= classify(name) %>')
++	@ApiUpdate(<%= classify(name) %>Response, '<%= classify(name) %>')
++	@Use<%= classify(name) %>Interceptor()
 +	update(@Param('id') id: string, @Body() update<%= classify(name) %>Dto: Update<%= classify(name) %>ByIdDto) {
 +		return this.commandBus.execute(new Update<%= classify(name) %>ByIdCommand({ id, data: update<%= classify(name) %>Dto }));
 +	}
 +
 +	@Delete(':id')
-+	@ApiDelete(<%= classify(name) %>Entity, '<%= classify(name) %>')
++	@ApiDelete(<%= classify(name) %>Response, '<%= classify(name) %>')
++	@Use<%= classify(name) %>Interceptor()
 +	remove(@Param('id') id: string) {
 +		return this.commandBus.execute(new Remove<%= classify(name) %>ByIdCommand({ id }));
 +	}
  }
+diff --git a/dist/lib/resource/files/ts/__name__.interceptor.ts b/dist/lib/resource/files/ts/__name__.interceptor.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..cfcf26f1c2166cbc32917c5bb084df2c8c69a287
+--- /dev/null
++++ b/dist/lib/resource/files/ts/__name__.interceptor.ts
+@@ -0,0 +1,44 @@
++import { IPaginationResponse } from '@common';
++import {
++	CallHandler,
++	ExecutionContext,
++	Injectable,
++	NestInterceptor,
++	UseInterceptors,
++	applyDecorators
++} from '@nestjs/common';
++import { plainToInstance } from 'class-transformer';
++import { Observable, map } from 'rxjs';
++import { <%= classify(name) %>PaginatedResponse, <%= classify(name) %>Response } from './dto/<%= name %>-response.dto';
++import { <%= classify(name) %>Model } from './models/<%= name %>.model';
++
++@Injectable()
++export class <%= classify(name) %>Interceptor implements NestInterceptor {
++	intercept(_context: ExecutionContext, handler: CallHandler): Observable<any> {
++		return handler.handle().pipe(
++			map((data: <%= classify(name) %>Model) => {
++				return plainToInstance(<%= classify(name) %>Response, data, {
++					excludeExtraneousValues: true
++				});
++			})
++		);
++	}
++}
++
++@Injectable()
++export class <%= classify(name) %>PaginatedInterceptor implements NestInterceptor {
++	intercept(_context: ExecutionContext, handler: CallHandler): Observable<any> {
++		return handler.handle().pipe(
++			map((<%= lowercased(name) %>Paginated: IPaginationResponse<<%= classify(name) %>Model>) => {
++				return plainToInstance(<%= classify(name) %>PaginatedResponse, <%= lowercased(name) %>Paginated, {
++					excludeExtraneousValues: true
++				});
++			})
++		);
++	}
++}
++
++export const Use<%= classify(name) %>Interceptor = () => applyDecorators(UseInterceptors(<%= classify(name) %>Interceptor));
++
++export const Use<%= classify(name) %>PaginatedInterceptor = () =>
++	applyDecorators(UseInterceptors(<%= classify(name) %>PaginatedInterceptor));
 diff --git a/dist/lib/resource/files/ts/__name__.interface.ts b/dist/lib/resource/files/ts/__name__.interface.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..128197f7804619bc2ba80dcea7791db373c92ae5
+index 0000000000000000000000000000000000000000..f0da1bab336a157eadba257a3416a8ece2dbaace
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/__name__.interface.ts
 @@ -0,0 +1,4 @@
 +import { BaseService } from '@common';
-+import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++import { <%= classify(name) %>Model } from './models/<%= name %>.model';
 +
-+export abstract class I<%= classify(name) %>Service extends BaseService<<%= classify(name) %>Entity> {}
++export abstract class I<%= classify(name) %>Service extends BaseService<<%= classify(name) %>Model> {}
 diff --git a/dist/lib/resource/files/ts/__name__.module.ts b/dist/lib/resource/files/ts/__name__.module.ts
-index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17fe973a9b 100644
+index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..e8e244e9f2c9ed93335ddd2ef18078a8f2d86ac3 100644
 --- a/dist/lib/resource/files/ts/__name__.module.ts
 +++ b/dist/lib/resource/files/ts/__name__.module.ts
 @@ -1,9 +1,29 @@
  import { Module } from '@nestjs/common';
-+import { TypeOrmModule } from '@nestjs/typeorm';
-+import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++import { MongooseModule } from '@nestjs/mongoose';
 +import { Create<%= classify(name) %>Handler } from './handlers/create-<%= name %>.handler';
 +import { GetAll<%= classify(name) %>PaginatedHandler } from './handlers/get-all-<%= name %>-paginated.handler';
 +import { GetOne<%= classify(name) %>ByIdHandler } from './handlers/get-one-<%= name %>-by-id.handler';
 +import { Remove<%= classify(name) %>ByIdHandler } from './handlers/remove-<%= name %>-by-id.handler';
 +import { Update<%= classify(name) %>ByIdHandler } from './handlers/update-<%= name %>-by-id.handler';
++import { <%= classify(name) %>Model, <%= classify(name) %>Schema } from './models/<%= name %>.model';
 +import { <%= classify(name) %>Controller } from './<%= name %>.controller';
 +import { I<%= classify(name) %>Service } from './<%= name %>.interface';
  import { <%= classify(name) %>Service } from './<%= name %>.service';
@@ -147,7 +211,7 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17
  @Module({
 -  <% if (type === 'rest' || type === 'microservice') { %>controllers: [<%= classify(name) %>Controller],
 -  providers: [<%= classify(name) %>Service],<% } else if (type === 'graphql-code-first' || type === 'graphql-schema-first') { %>providers: [<%= classify(name) %>Resolver, <%= classify(name) %>Service],<% } else { %>providers: [<%= classify(name) %>Gateway, <%= classify(name) %>Service],<% } %>
-+	imports: [TypeOrmModule.forFeature([<%= classify(name) %>Entity])],
++	imports: [MongooseModule.forFeature([{ name: <%= classify(name) %>Model.name, schema: <%= classify(name) %>Schema }])],
 +	controllers: [<%= classify(name) %>Controller],
 +	providers: [
 +		{
@@ -167,7 +231,7 @@ diff --git a/dist/lib/resource/files/ts/__name__.service.__specFileSuffix__.ts b
 deleted file mode 100644
 index 2b3f38b0f51c556a070d19fff7b3f6d840470730..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.service.ts b/dist/lib/resource/files/ts/__name__.service.ts
-index 21943aa0987dd8dd020596bede4f801c686bff6d..acdc2226a24787525b59286983d20b71f65e4e20 100644
+index 21943aa0987dd8dd020596bede4f801c686bff6d..6281b4da611e02855f6104e98c0e4978151cf0f5 100644
 --- a/dist/lib/resource/files/ts/__name__.service.ts
 +++ b/dist/lib/resource/files/ts/__name__.service.ts
 @@ -1,28 +1,14 @@
@@ -176,10 +240,10 @@ index 21943aa0987dd8dd020596bede4f801c686bff6d..acdc2226a24787525b59286983d20b71
 -import { Update<%= singular(classify(name)) %>Dto } from './dto/update-<%= singular(name) %>.dto';<% } else if (crud) { %>
 -import { Create<%= singular(classify(name)) %>Input } from './dto/create-<%= singular(name) %>.input';
 -import { Update<%= singular(classify(name)) %>Input } from './dto/update-<%= singular(name) %>.input';<% } %>
-+import { Injectable } from '@nestjs/common';
-+import { InjectRepository } from '@nestjs/typeorm';
-+import { Repository } from 'typeorm';
-+import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++import { Injectable, UnauthorizedException } from '@nestjs/common';
++import { InjectModel } from '@nestjs/mongoose';
++import { Model } from 'mongoose';
++import { <%= classify(name) %>Model } from './models/<%= name %>.model';
 +import { I<%= classify(name) %>Service } from './<%= name %>.interface';
  
  @Injectable()
@@ -206,8 +270,8 @@ index 21943aa0987dd8dd020596bede4f801c686bff6d..acdc2226a24787525b59286983d20b71
 -    return `This action removes a #${id} <%= lowercased(singular(classify(name))) %>`;
 -  }
 -<% } %>}
-+	constructor(@InjectRepository(<%= classify(name) %>Entity) private readonly <%= lowercased(name) %>Repo: Repository<<%= classify(name) %>Entity>) {
-+		super(<%= lowercased(name) %>Repo);
++	constructor(@InjectModel(<%= classify(name) %>Model.name) private readonly <%= lowercased(name) %>Model: Model<<%= classify(name) %>Model>) {
++		super(<%= lowercased(name) %>Model);
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts b/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts
@@ -282,6 +346,25 @@ index 0000000000000000000000000000000000000000..e60ca0522581208617e9b5537c64dfec
 +		Object.assign(this, data);
 +	}
 +}
+diff --git a/dist/lib/resource/files/ts/dto/__name__-response.dto.ts b/dist/lib/resource/files/ts/dto/__name__-response.dto.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c63bd32cc91e7242a6b5c5dbb055940e2a25fd5
+--- /dev/null
++++ b/dist/lib/resource/files/ts/dto/__name__-response.dto.ts
+@@ -0,0 +1,13 @@
++import { BaseResponse, IPagination } from '@common';
++import { Expose, Type } from 'class-transformer';
++
++export class <%= classify(name) %>Response extends BaseResponse {}
++
++export class <%= classify(name) %>PaginatedResponse {
++	@Expose()
++	@Type(() => <%= classify(name) %>Response)
++	data!: <%= classify(name) %>Response[];
++
++	@Expose()
++	pagination!: IPagination;
++}
 diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
 index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..59b6b6c9d48e88f2ef96d9aa2aaadda83934d841 100644
 --- a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
@@ -303,21 +386,8 @@ diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/di
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e59ffd95f 100644
---- a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-+++ b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-@@ -1,7 +1,5 @@
--<% if (type === 'graphql-code-first') { %>import { ObjectType, Field, Int } from '@nestjs/graphql';
-+import { BaseEntity } from '@common';
-+import { Entity } from 'typeorm';
- 
--@ObjectType()
--export class <%= singular(classify(name)) %> {
--  @Field(() => Int, { description: 'Example field (placeholder)' })
--  exampleField: number;
--}<% } else { %>export class <%= singular(classify(name)) %> {}<% } %>
-+@Entity({ name: '<%= dashed(name) %>' })
-+export class <%= classify(name) %>Entity extends BaseEntity {}
+deleted file mode 100644
+index 362e741b403a8216353797d2235f07e2ac77719b..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..4cd62bb8c47fefcb2a945a5b2c0eac773d865d36
@@ -433,6 +503,21 @@ index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f
 +		return this.<%= lowercased(name) %>Service.updateById(id, data);
 +	}
 +}
+diff --git a/dist/lib/resource/files/ts/models/__name__.model.ts b/dist/lib/resource/files/ts/models/__name__.model.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b147848c5efc0745cdb169a7435712a14e4e377
+--- /dev/null
++++ b/dist/lib/resource/files/ts/models/__name__.model.ts
+@@ -0,0 +1,9 @@
++import { BaseModel, Schema, createSchema } from '@common';
++import { HydratedDocument } from 'mongoose';
++
++export type <%= classify(name) %>Document = HydratedDocument<<%= classify(name) %>Model> & BaseModel;
++
++@Schema()
++export class <%= classify(name) %>Model extends BaseModel {}
++
++export const <%= classify(name) %>Schema = createSchema(<%= classify(name) %>Model);
 diff --git a/dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.gateway.__specFileSuffix__.ts
 similarity index 78%
 rename from dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts
@@ -469,17 +554,17 @@ index 2ef2c6fcae7e0990141c3bc062c112c42b9cfe9e..38800fb52fe2376d2bb147283a90cc0d
    let resolver: <%= classify(name) %>Resolver;
 diff --git a/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b44a78d79
+index 0000000000000000000000000000000000000000..652152a8e82e631a9912f31c5ce8cf04e88867f3
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 @@ -0,0 +1,32 @@
 +import { Test, TestingModule } from '@nestjs/testing';
-+import { getRepositoryToken } from '@nestjs/typeorm';
-+import { <%= classify(name) %>Entity } from '../entities/<%= name %>.entity';
++import { getModelToken } from '@nestjs/mongoose';
++import { <%= classify(name) %>Model } from '../models/<%= name %>.model';
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +import { <%= classify(name) %>Service } from '../<%= name %>.service';
 +
-+const mock<%= classify(name) %>Repository = jest.fn().mockReturnValue({});
++const mock<%= classify(name) %>Model = jest.fn().mockReturnValue({});
 +
 +describe('<%= classify(name) %>Service', () => {
 +	let service: I<%= classify(name) %>Service;
@@ -492,8 +577,8 @@ index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b
 +					useClass: <%= classify(name) %>Service
 +				},
 +				{
-+					provide: getRepositoryToken(<%= classify(name) %>Entity),
-+					useValue: mock<%= classify(name) %>Repository
++					provide: getModelToken(<%= classify(name) %>Model.name),
++					useValue: mock<%= classify(name) %>Model
 +				}
 +			]
 +		}).compile();
