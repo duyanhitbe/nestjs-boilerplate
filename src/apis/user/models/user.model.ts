@@ -5,7 +5,7 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<UserModel> & BaseModel;
 
-@Schema()
+@Schema('user')
 export class UserModel extends BaseModel {
 	/** Tài khoản đăng nhập */
 	@Prop()

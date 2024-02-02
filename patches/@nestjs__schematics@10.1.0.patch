@@ -505,7 +505,7 @@ index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f
 +}
 diff --git a/dist/lib/resource/files/ts/models/__name__.model.ts b/dist/lib/resource/files/ts/models/__name__.model.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..1b147848c5efc0745cdb169a7435712a14e4e377
+index 0000000000000000000000000000000000000000..ce2e4c18842534a54b6d062c54269ef6f071a23f
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/models/__name__.model.ts
 @@ -0,0 +1,9 @@
@@ -514,7 +514,7 @@ index 0000000000000000000000000000000000000000..1b147848c5efc0745cdb169a7435712a
 +
 +export type <%= classify(name) %>Document = HydratedDocument<<%= classify(name) %>Model> & BaseModel;
 +
-+@Schema()
++@Schema('<%= dashed(name) %>')
 +export class <%= classify(name) %>Model extends BaseModel {}
 +
 +export const <%= classify(name) %>Schema = createSchema(<%= classify(name) %>Model);

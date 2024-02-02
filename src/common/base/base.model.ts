@@ -22,8 +22,8 @@ export class BaseModel {
 	isActive!: boolean;
 }
 
-export const Schema = () =>
-	applyDecorators(NestMongooseSchema({ timestamps: true, versionKey: false }));
+export const Schema = (collection?: string) =>
+	applyDecorators(NestMongooseSchema({ timestamps: true, versionKey: false, collection }));
 
 export const createSchema = (target: Type<BaseModel>) => {
 	const schema = SchemaFactory.createForClass(target);
