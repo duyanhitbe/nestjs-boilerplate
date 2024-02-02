@@ -5,9 +5,21 @@ import {
 	ApiGetAll,
 	ApiGetOne,
 	ApiUpdate,
+	IPaginationResponse,
+	MongooseClassSerializerInterceptor,
 	PaginationDto
 } from '@common';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+	UseInterceptors
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiParam } from '@nestjs/swagger';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -18,9 +30,11 @@ import { UpdateUserByIdCommand } from './commands/update-user-by-id.command';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserByIdDto } from './dto/update-user-by-id.dto';
 import { UserEntity } from './entities/user.entity';
+import { UserModel } from './models/user.model';
 
 @Controller('user')
 @ApiController('User')
+@UseInterceptors(MongooseClassSerializerInterceptor(UserModel))
 export class UserController {
 	constructor(private readonly commandBus: CommandBus) {}
 
@@ -31,6 +45,7 @@ export class UserController {
 	}
 
 	@Get()
+	@UseInterceptors(MongooseClassSerializerInterceptor(IPaginationResponse<UserModel>))
 	@ApiGetAll(UserEntity, 'User')
 	getAll(@Query() query: PaginationDto) {
 		return this.commandBus.execute(new GetAllUserPaginatedCommand({ query }));

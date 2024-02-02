@@ -11,12 +11,7 @@ import * as Joi from 'joi';
 				NODE_ENV: Joi.string(),
 				PORT: Joi.number(),
 
-				DB_HOST: Joi.string(),
-				DB_PORT: Joi.number(),
-				DB_USERNAME: Joi.string().required(),
-				DB_PASSWORD: Joi.string().required(),
-				DB_NAME: Joi.string().required(),
-				DB_SCHEMA: Joi.string().required(),
+				MONGO_URL: Joi.string(),
 
 				SECRET_JWT: Joi.string().required(),
 

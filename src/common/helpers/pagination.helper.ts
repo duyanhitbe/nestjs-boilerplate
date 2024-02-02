@@ -1,6 +1,7 @@
-import { PaginationDto } from '../base/base.dto';
+import { IPaginationResponse, PaginationDto } from '../base/base.dto';
+import { BaseModel } from '../base/base.model';
 
-export function paginationHelper<T>(
+export function paginationHelper<T extends BaseModel>(
 	array: T[],
 	paginationDto: PaginationDto
 ): IPaginationResponse<T> {

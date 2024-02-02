@@ -1,10 +1,11 @@
-import { BaseEntity } from '@common';
-import { FindOptionsOrder, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
+import { BaseModel } from '@common';
+import { FilterQuery } from 'mongoose';
+import { FindOptionsOrder, FindOptionsSelect } from 'typeorm';
 
 declare global {
-	type FindOptions<T extends BaseEntity> = {
+	type FindOptions<T extends BaseModel> = {
 		/** Điều kiện */
-		where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+		where?: FilterQuery<T>;
 		/** Sắp xếp */
 		order?: FindOptionsOrder<T>;
 		/** Nối bảng */
@@ -19,12 +20,12 @@ declare global {
 		select?: FindOptionsSelect<T>;
 	};
 
-	type FindOrFailOptions<T extends BaseEntity> = FindOptions<T> & {
+	type FindOrFailOptions<T extends BaseModel> = FindOptions<T> & {
 		/** Thông báo khi không tìm thấy record */
 		errorMessage?: string;
 	};
 
-	type FindWithPaginationOptions<T extends BaseEntity> = Partial<FindOptions<T>> & {
+	type FindWithPaginationOptions<T extends BaseModel> = Partial<FindOptions<T>> & {
 		/** Số item trong một trang */
 		limit?: string;
 		/** Số trang hiện tại */
@@ -41,43 +42,16 @@ declare global {
 		filter?: string;
 	};
 
-	type IPaginationResponse<T> = {
-		/** Mảng các items */
-		data: T[];
-		pagination: {
-			/** Số item trong một trang */
-			limit: number;
-			/** Số trang hiện tại */
-			page: number;
-			/** Tổng số lượng item */
-			total: number;
-		};
-	};
-
-	type IResponse<T> = {
-		/** Response status code */
-		status: number;
-		/** Thông báo */
-		message: string;
-		/** Dữ liệu */
-		data: T;
-		/** Dữ liệu phân trang */
-		pagination?: {
-			/** Số item trong một trang */
-			limit: number;
-			/** Số trang hiện tại */
-			page: number;
-			/** Tổng số lượng item */
-			total: number;
-		};
-	};
-
 	type GenerateTokenData = {
 		accessToken: string;
 	};
 
 	type LogoutData = {
 		success: boolean;
+	};
+	type DeleteResult = {
+		acknowledged: boolean;
+		deletedCount: number;
 	};
 }
 

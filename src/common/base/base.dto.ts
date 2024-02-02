@@ -1,6 +1,7 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { IsNumberString, IsOptional } from 'class-validator';
 import { FindOptionsWhere } from 'typeorm';
+import { BaseModel } from './base.model';
 
 export class PaginationDto {
 	@IsOptional()
@@ -28,4 +29,35 @@ export class PaginationDto {
 
 export class GetAllQueryDto<T = any> extends OmitType(PaginationDto, ['limit', 'page']) {
 	where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+}
+
+export class IResponse<T extends BaseModel> {
+	/** Response status code */
+	status!: number;
+	/** Thông báo */
+	message!: string;
+	/** Dữ liệu */
+	data!: T;
+	/** Dữ liệu phân trang */
+	pagination?: {
+		/** Số item trong một trang */
+		limit: number;
+		/** Số trang hiện tại */
+		page: number;
+		/** Tổng số lượng item */
+		total: number;
+	};
+}
+
+export class IPaginationResponse<T extends BaseModel> {
+	/** Mảng các items */
+	data!: T[];
+	pagination!: {
+		/** Số item trong một trang */
+		limit: number;
+		/** Số trang hiện tại */
+		page: number;
+		/** Tổng số lượng item */
+		total: number;
+	};
 }

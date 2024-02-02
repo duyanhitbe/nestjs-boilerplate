@@ -3,7 +3,6 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
 import { AppService } from './app.service';
 import { TypeOrmFilter } from './common/filters/typeorm.filter';
-import { FormatResponseInterceptor } from './common/interceptors/format-response.interceptor';
 
 export const providers: Provider[] = [
 	AppService,
@@ -16,10 +15,6 @@ export const providers: Provider[] = [
 	{
 		provide: APP_INTERCEPTOR,
 		useClass: ClassSerializerInterceptor
-	},
-	{
-		provide: APP_INTERCEPTOR,
-		useClass: FormatResponseInterceptor
 	},
 	{
 		provide: APP_FILTER,
