@@ -1,7 +1,7 @@
 import { PaginationDto } from '@common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserInput } from '../dto/create-user.input';
-import { UpdateUserByIdDto } from '../dto/update-user-by-id.dto';
+import { UpdateUserByIdInput } from '../dto/update-user-by-id.input';
 
 export const UserService = jest.fn().mockReturnValue({
 	create: jest.fn((dto: CreateUserInput) => ({
@@ -55,7 +55,7 @@ export const UserService = jest.fn().mockReturnValue({
 		createdAt: new Date(),
 		updatedAt: new Date()
 	})),
-	updateById: jest.fn((id: string, data: UpdateUserByIdDto) => ({
+	updateById: jest.fn((id: string, data: UpdateUserByIdInput) => ({
 		...data,
 		id,
 		createdAt: new Date(),

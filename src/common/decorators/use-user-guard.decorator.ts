@@ -1,11 +1,10 @@
-import { AuthStrategy } from '@apis/auth/auth.const';
+import { UserJwtGuard } from '@apis/auth/guards/user-jwt.guard';
 import { UseGuards, applyDecorators } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 export const UseUserGuard = () =>
 	applyDecorators(
-		UseGuards(AuthGuard(AuthStrategy.USER_JWT)),
+		UseGuards(UserJwtGuard),
 		ApiBearerAuth(),
 		ApiUnauthorizedResponse({ description: 'Thiếu hoặc sai token' })
 	);
