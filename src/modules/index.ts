@@ -11,3 +11,5 @@ export * from './mail/mail.service';
 export * from './jwt/jwt.interface';
 export * from './jwt/jwt.module';
 export * from './jwt/jwt.service';
+
+export * from './graphql/graphql.module';

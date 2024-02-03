@@ -1,4 +1,3 @@
-import { UseUserGuard } from '@common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -12,7 +11,6 @@ import { UserEntity } from './entities/user.entity';
 import { GetAllUserArgs, UserPaginated } from './user.schema';
 
 @Resolver(() => UserEntity)
-@UseUserGuard()
 export class UserResolver {
 	constructor(private readonly commandBus: CommandBus) {}
 

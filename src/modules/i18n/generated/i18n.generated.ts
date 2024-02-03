@@ -2,6 +2,9 @@
 
 import { Path } from "nestjs-i18n";
 export type I18nTranslations = {
+    "errors": {
+        "WRONG_PASSWORD": string;
+    };
     "validation": {
         "IS_STRING": string;
         "IS_JSON": string;

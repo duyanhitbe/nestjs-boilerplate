@@ -1,19 +1,17 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
-import { Response } from 'express';
+import { I18nService } from 'nestjs-i18n';
 
 @Catch(HttpException)
 export class HttpFilter implements ExceptionFilter {
+	constructor(private readonly i18n: I18nService) {}
+
 	private logger = new Logger('HttpException');
 
-	catch(exception: HttpException, host: ArgumentsHost) {
-		const response = host.switchToHttp().getResponse<Response>();
-		const statusCode = exception.getStatus();
+	catch(exception: HttpException, _host: ArgumentsHost) {
 		const exceptionResponse = exception.getResponse() as HttpExceptionResponse;
-		const { error, message } = exceptionResponse;
+		const { error, statusCode, message } = exceptionResponse;
 
 		this.logger.error(`[${statusCode}] - ${error}`);
 		this.logger.error(`${JSON.stringify(message)}`);
-
-		response.status(statusCode).json(exceptionResponse);
 	}
 }
