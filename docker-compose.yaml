@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+
+  app:
+    container_name: nestjs_boilerplate_app
+    #Dev mode
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    command: ["pnpm", "start:dev"]
+    #Prod mode
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - $PORT:3000
+    networks:
+      - app_db
+      - app_redis
+
+  db:
+    container_name: nestjs_boilerplate_db
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: $DB_USERNAME
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
+    ports:
+      - $DB_HOST_PORT:$DB_PORT
+    volumes:
+      - .docker/db:/var/lib/postgresql
+    networks:
+      - app_db
+
+  redis:
+    container_name: nestjs_boilerplate_redis
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD
+    ports:
+      - $REDIS_HOST_PORT:$REDIS_PORT
+    volumes:
+      - .docker/redis:/data
+    networks:
+      - app_redis
+
+networks:
+  app_db:
+  app_redis:
