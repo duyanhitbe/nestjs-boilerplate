@@ -13,6 +13,9 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
+    depends_on:
+      - db
+      - redis
     env_file:
       - .env
     ports:
