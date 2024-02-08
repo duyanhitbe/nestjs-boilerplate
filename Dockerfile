@@ -1,16 +1,20 @@
-FROM node:20-slim AS base
+FROM node:18-alpine as base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
-COPY . /app
 WORKDIR /app
+RUN npm i -g @nestjs/cli
+COPY package.json .
+COPY pnpm-lock.yaml .
+COPY ./patches /app/patches
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+COPY . .
 
-FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --ignore-scripts
-RUN pnpm run build
-
-FROM base
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/dist /app/dist
+FROM base as dev
 EXPOSE 3000
-CMD [ "pnpm", "start:prod" ]
+
+FROM base as prod
+RUN pnpm build
+RUN pnpm prune --prod --config.ignore-scripts=true
+EXPOSE 3000
+CMD ["pnpm", "start:prod"]
