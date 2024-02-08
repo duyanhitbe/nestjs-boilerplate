@@ -27,7 +27,7 @@ async function bootstrap() {
 		const url = await app.getUrl();
 		logger.debug(`Your app is running on port ${port}`);
 		logger.debug(`Environment: ${nodeEnv}`);
-		logger.debug(`Documentation ${url}/docs`);
+		logger.debug(`Apollo Sandbox ${url}/graphql`);
 	});
 }
 bootstrap();
