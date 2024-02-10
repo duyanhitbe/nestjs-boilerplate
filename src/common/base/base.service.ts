@@ -70,6 +70,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 	}
 
 	async getAllPaginated(options: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>> {
+		const order = options.order;
 		const where = { ...options.where, deletedAt: null };
 		const limit = +(options.limit || 10);
 		const page = +(options.page || 1);
@@ -78,6 +79,9 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 		let query = this.model.find(where);
 		if (limit !== -1) {
 			query = query.limit(limit).skip(skip);
+		}
+		if (order) {
+			query = query.sort(order);
 		}
 		const data = await query.exec();
 		const total = await this.model.countDocuments(where);

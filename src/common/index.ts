@@ -10,7 +10,6 @@ export * from './decorators/user.decorator';
 export * from './enums/language.enum';
 
 export * from './filters/http.filter';
-export * from './filters/typeorm.filter';
 
 export * from './guards/env.guard';
 

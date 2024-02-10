@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsNumberString, IsOptional } from 'class-validator';
-import { FindOptionsWhere } from 'typeorm';
+import { FilterQuery } from 'mongoose';
 import { BaseModel } from './base.model';
 
 export class PaginationDto {
@@ -29,7 +29,7 @@ export class PaginationDto {
 }
 
 export class GetAllQueryDto<T = any> extends OmitType(PaginationDto, ['limit', 'page']) {
-	where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+	where?: FilterQuery<T>;
 }
 
 export class IResponse<T extends BaseModel> {

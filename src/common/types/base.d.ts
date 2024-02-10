@@ -1,13 +1,17 @@
 import { BaseModel } from '@common';
-import { FilterQuery } from 'mongoose';
-import { FindOptionsOrder, FindOptionsSelect } from 'typeorm';
+import { FilterQuery, SortOrder } from 'mongoose';
 
 declare global {
 	type FindOptions<T extends BaseModel> = {
 		/** Điều kiện */
 		where?: FilterQuery<T>;
 		/** Sắp xếp */
-		order?: FindOptionsOrder<T>;
+		order?:
+			| string
+			| { [key: string]: SortOrder | { $meta: any } }
+			| [string, SortOrder][]
+			| undefined
+			| null;
 		/** Nối bảng */
 		relations?: string[];
 		/** Lọc theo field */
@@ -17,7 +21,7 @@ declare global {
 		/** Chứa những dữ liệu đã bị xóa */
 		withDeleted?: boolean;
 		/** Chọn trường lấy ra từ DB */
-		select?: FindOptionsSelect<T>;
+		select?: string;
 	};
 
 	type FindOrFailOptions<T extends BaseModel> = FindOptions<T> & {
