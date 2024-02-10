@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 @Injectable()
 export class FormatResponseInterceptor implements NestInterceptor {
-	intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
+	intercept(context: ExecutionContext, next: CallHandler<any>): Observable<IResponse<any>> {
 		const response = context.switchToHttp().getResponse<Response>();
 		const status = response.statusCode;
 

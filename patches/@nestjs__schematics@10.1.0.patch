@@ -132,11 +132,10 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..8089a203ca3e567fe4f98d1dc37684e7
  }
 diff --git a/dist/lib/resource/files/ts/__name__.interceptor.ts b/dist/lib/resource/files/ts/__name__.interceptor.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..cfcf26f1c2166cbc32917c5bb084df2c8c69a287
+index 0000000000000000000000000000000000000000..b17ba0624d0f90cda3c8bd387bc5156915ff61d8
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/__name__.interceptor.ts
-@@ -0,0 +1,44 @@
-+import { IPaginationResponse } from '@common';
+@@ -0,0 +1,43 @@
 +import {
 +	CallHandler,
 +	ExecutionContext,

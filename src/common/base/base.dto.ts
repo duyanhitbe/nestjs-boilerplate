@@ -1,53 +1,35 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-import { IsNumberString, IsOptional } from 'class-validator';
-import { FilterQuery } from 'mongoose';
-import { BaseModel } from './base.model';
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose, Transform } from 'class-transformer';
+import { IsOptional } from 'class-validator';
+import { FilterQuery, SortOrder } from 'mongoose';
+import { IsNumber } from '../decorators/validation.decorator';
 
 export class PaginationDto {
 	@IsOptional()
-	@IsNumberString()
+	@IsNumber()
+	@Transform(({ value }) => +(value || 10))
 	@ApiProperty({ description: 'Số item mỗi trang', example: '10' })
-	limit?: string;
+	limit?: number;
 
 	@IsOptional()
-	@IsNumberString()
+	@IsNumber()
+	@Transform(({ value }) => +(value || 1))
 	@ApiProperty({ description: 'Số trang hiện tại', example: '1' })
-	page?: string;
+	page?: number;
 
 	@IsOptional()
+	@Transform(({ value }) => JSON.parse(value || '{}'))
 	@ApiProperty({ description: 'Sort theo field', example: '{ "createdAt": "ASC" }' })
-	sort?: string;
+	sort?: Record<string, SortOrder>;
 
 	@IsOptional()
+	@Transform(({ value }) => JSON.parse(value || '{}'))
 	@ApiProperty({ description: 'Filter theo field', example: '{ "name": "string" }' })
-	filter?: string;
+	filter?: FilterQuery<any>;
 
 	@IsOptional()
 	@ApiProperty({ description: 'Tìm kiếm', example: '' })
 	search?: string;
-}
-
-export class GetAllQueryDto<T = any> extends OmitType(PaginationDto, ['limit', 'page']) {
-	where?: FilterQuery<T>;
-}
-
-export class IResponse<T extends BaseModel> {
-	/** Response status code */
-	status!: number;
-	/** Thông báo */
-	message!: string;
-	/** Dữ liệu */
-	data!: T;
-	/** Dữ liệu phân trang */
-	pagination?: {
-		/** Số item trong một trang */
-		limit: number;
-		/** Số trang hiện tại */
-		page: number;
-		/** Tổng số lượng item */
-		total: number;
-	};
 }
 
 export class IPagination {
@@ -60,15 +42,6 @@ export class IPagination {
 	/** Tổng số lượng item */
 	@Expose()
 	total!: number;
-}
-
-export class IPaginationResponse<T> {
-	/** Mảng các items */
-	@Expose()
-	data!: T[];
-
-	@Expose()
-	pagination!: IPagination;
 }
 
 export class BaseResponse {

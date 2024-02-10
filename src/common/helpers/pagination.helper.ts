@@ -1,4 +1,4 @@
-import { IPaginationResponse, PaginationDto } from '../base/base.dto';
+import { PaginationDto } from '../base/base.dto';
 import { BaseModel } from '../base/base.model';
 
 export function paginationHelper<T extends BaseModel>(

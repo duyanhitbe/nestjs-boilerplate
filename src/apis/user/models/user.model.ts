@@ -24,3 +24,5 @@ UserSchema.pre<UserDocument>('save', async function (next) {
 	}
 	next();
 });
+
+UserSchema.index({ username: 'text' }, { weights: { username: 1 } });

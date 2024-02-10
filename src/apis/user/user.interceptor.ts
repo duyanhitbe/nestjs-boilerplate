@@ -1,4 +1,3 @@
-import { IPaginationResponse } from '@common';
 import {
 	CallHandler,
 	ExecutionContext,

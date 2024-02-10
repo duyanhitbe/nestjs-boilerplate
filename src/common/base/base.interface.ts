@@ -1,4 +1,4 @@
-import { BaseModel, IPaginationResponse } from '@common';
+import { BaseModel } from '@common';
 import { Aggregate, AggregateOptions, FilterQuery, PipelineStage, UpdateQuery, UpdateWriteOpResult } from 'mongoose';
 
 /** 
@@ -144,19 +144,21 @@ export abstract class AbstractBaseService<T extends BaseModel> {
 	 * @param where Tùy chọn để lấy record
 	 * @param field Tên field cần tăng
 	 * @param value Giá trị tăng
+	 * @param options Tùy chọn để lấy record
 	 * @returns Promise<UpdateResult>
 	 * @example service.increment({ where: { name: 'John Doe' } }, 'age', 1)
 	 */
-	abstract increment(where: FilterQuery<T>, field: string, value: number): Promise<T>
+	abstract increment(where: FilterQuery<T>, field: string, value: number, options?: Partial<FindOptions<T>>): Promise<T>
 	/** 
 	 * Giảm
 	 * @param where Tùy chọn để lấy record
 	 * @param field Tên field cần giảm
 	 * @param value Giá trị giảm
+	 * @param options Tùy chọn để lấy record
 	 * @returns Promise<UpdateResult>
 	 * @example service.decrement({ where: { name: 'John Doe' } }, 'age', 1)
 	 */
-	abstract decrement(where: FilterQuery<T>, field: string, value: number): Promise<T>
+	abstract decrement(where: FilterQuery<T>, field: string, value: number, options?: Partial<FindOptions<T>>): Promise<T>
 	/** 
 	 * Lấy một record hoặc tạo mới
 	 * @param options Tùy chọn để lấy record
