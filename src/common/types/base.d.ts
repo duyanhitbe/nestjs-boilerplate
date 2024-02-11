@@ -9,8 +9,6 @@ declare global {
 		order?: FindOptionsOrder<T>;
 		/** Nối bảng */
 		relations?: string[];
-		/** Lọc theo field */
-		filter?: FindOptionsWhere<UserEntity> | FindOptionsWhere<UserEntity>[];
 		/** Bật tắt eager */
 		loadEagerRelations?: boolean;
 		/** Chứa những dữ liệu đã bị xóa */
@@ -29,6 +27,16 @@ declare global {
 		limit?: number;
 		/** Số trang hiện tại */
 		page?: number;
+		/**
+		 * Sắp xếp
+		 * @example {"createdAt": "ASC"}
+		 */
+		sort?: FindOptionsOrder<T>;
+		/**
+		 * Lọc
+		 * @examples { "name": "ABC" }
+		 */
+		filter?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
 	};
 
 	type IPaginationResponse<T> = {

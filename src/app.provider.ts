@@ -1,8 +1,8 @@
 import { ClassSerializerInterceptor, Provider } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AppService } from './app.service';
-import { HttpFilter } from './common/filters/http.filter';
 import { TypeOrmFilter } from './common/filters/typeorm.filter';
+import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
 import { ValidationPipe } from './common/pipes/validation.pipe';
 
 export const providers: Provider[] = [
@@ -16,11 +16,11 @@ export const providers: Provider[] = [
 		useClass: ClassSerializerInterceptor
 	},
 	{
-		provide: APP_FILTER,
-		useClass: TypeOrmFilter
+		provide: APP_INTERCEPTOR,
+		useClass: LoggerInterceptor
 	},
 	{
 		provide: APP_FILTER,
-		useClass: HttpFilter
+		useClass: TypeOrmFilter
 	}
 ];

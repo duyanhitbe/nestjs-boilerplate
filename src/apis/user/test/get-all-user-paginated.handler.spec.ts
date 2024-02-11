@@ -32,8 +32,8 @@ describe('GetAllUserPaginatedHandler', () => {
 	it('should call userService.getAllPaginated with the provided query', async () => {
 		const data = new GetAllUserPaginatedCommand({
 			query: {
-				limit: '10',
-				page: '1'
+				limit: 10,
+				page: 1
 			}
 		});
 

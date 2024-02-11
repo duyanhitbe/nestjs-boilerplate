@@ -1,84 +1,70 @@
 import { applyDecorators } from '@nestjs/common';
-import * as Validators from 'class-validator';
+import * as validator from 'class-validator';
+import { translate } from 'src/modules/i18n/i18n.helper';
 
-export const IsString = () =>
+export const IsString = (validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsString({
-			message: 'validation.IS_STRING'
+		validator.IsString({ ...validationOptions, message: translate('validation.IS_STRING') })
+	);
+
+export const IsNotEmpty = (validationOptions?: validator.ValidationOptions) =>
+	applyDecorators(
+		validator.IsNotEmpty({
+			...validationOptions,
+			message: translate('validation.IS_NOT_EMPTY')
 		})
 	);
 
-export const IsNotEmpty = () =>
+export const IsEmail = (validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsNotEmpty({
-			message: 'validation.IS_NOT_EMPTY'
+		validator.IsEmail({}, { ...validationOptions, message: translate('validation.IS_EMAIL') })
+	);
+
+export const IsNumber = (
+	options?: validator.IsNumberOptions,
+	validationOptions?: validator.ValidationOptions
+) =>
+	applyDecorators(
+		validator.IsNumber(options, {
+			...validationOptions,
+			message: translate('validation.IS_NUMBER')
 		})
 	);
 
-export const IsNumber = () =>
+export const IsNumberString = (validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsNumber(
+		validator.IsNumberString(
 			{},
 			{
-				message: 'validation.IS_NUMBER'
+				...validationOptions,
+				message: translate('validation.IS_NUMBER_STRING')
 			}
 		)
 	);
 
-export const IsNumberString = () =>
+export const IsDateString = (validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsNumberString(
+		validator.IsDateString(
 			{},
 			{
-				message: 'validation.IS_NUMBER_STRING'
+				...validationOptions,
+				message: translate('validation.IS_DATE_STRING')
 			}
 		)
 	);
 
-export const IsJSON = () =>
+export const Min = (minValue: number, validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsJSON({
-			message: 'validation.IS_JSON'
+		validator.Min(minValue, {
+			...validationOptions,
+			message: translate('validation.MIN')
 		})
 	);
 
-export const IsObject = () =>
+export const Max = (maxValue: number, validationOptions?: validator.ValidationOptions) =>
 	applyDecorators(
-		Validators.IsObject({
-			message: 'validation.IS_OBJECT'
-		})
-	);
-
-export const IsEmail = () =>
-	applyDecorators(
-		Validators.IsEmail(
-			{},
-			{
-				message: 'validation.IS_EMAIL'
-			}
-		)
-	);
-
-export const IsDateString = () =>
-	applyDecorators(
-		Validators.IsDateString(
-			{},
-			{
-				message: 'validation.IS_DATE_STRING'
-			}
-		)
-	);
-
-export const Max = (value: number) =>
-	applyDecorators(
-		Validators.Max(value, {
-			message: 'validation.MAX'
-		})
-	);
-
-export const Min = (value: number) =>
-	applyDecorators(
-		Validators.Min(value, {
-			message: 'validation.MIN'
+		validator.Max(maxValue, {
+			...validationOptions,
+			message: translate('validation.MAX')
 		})
 	);

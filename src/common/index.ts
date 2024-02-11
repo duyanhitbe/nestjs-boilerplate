@@ -11,7 +11,6 @@ export * from './decorators/validation.decorator';
 
 export * from './enums/language.enum';
 
-export * from './filters/http.filter';
 export * from './filters/typeorm.filter';
 
 export * from './guards/env.guard';
@@ -25,11 +24,7 @@ export * from './helpers/phone.helper';
 export * from './helpers/random.helper';
 export * from './helpers/validation.helper';
 
-export * from './interceptors/format-response.interceptor';
-
-export * from './interfaces/base-service.interface';
-
-export * from './middlewares/logger.middleware';
+export * from './interceptors/logger.interceptor';
 
 export * from './pipes/hash-password.pipe';
 
