@@ -2,10 +2,10 @@ diff --git a/dist/lib/resource/files/ts/__name__.controller.__specFileSuffix__.t
 deleted file mode 100644
 index 17e58435f19ce66f9b8d4d82ff3736c43a908712..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.controller.ts b/dist/lib/resource/files/ts/__name__.controller.ts
-index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792def21b0b 100644
+index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..9981d78e1a75d39b78416e27be075bf6229f2f74 100644
 --- a/dist/lib/resource/files/ts/__name__.controller.ts
 +++ b/dist/lib/resource/files/ts/__name__.controller.ts
-@@ -1,63 +1,49 @@
+@@ -1,63 +1,47 @@
 -<% if (crud && type === 'rest') { %>import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';<%
 -} else if (crud && type === 'microservice') { %>import { Controller } from '@nestjs/common';
 -import { MessagePattern, Payload } from '@nestjs/microservices';<%
@@ -19,7 +19,6 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792
 +import { ApiCreate, ApiDelete, ApiGetAll, ApiGetOne, ApiUpdate, PaginationDto, ApiController } from '@common';
 +import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 +import { CommandBus } from '@nestjs/cqrs';
-+import { ApiParam } from '@nestjs/swagger';
 +import { Create<%= classify(name) %>Dto } from './dto/create-<%= name %>.dto';
 +import { Update<%= classify(name) %>ByIdDto } from './dto/update-<%= name %>-by-id.dto';
 +import { Create<%= classify(name) %>Command } from './commands/create-<%= name %>.command';
@@ -99,7 +98,6 @@ index 8d1b7b4a65dbd8b0b6a431b5448294cb2edd14c2..78c559d02c9fdf4750979b0c84006792
 +
 +	@Get(':id')
 +	@ApiGetOne(<%= classify(name) %>Entity, '<%= classify(name) %>')
-+	@ApiParam({ name: 'id', description: 'Truyền all nếu muốn lấy tất cả' })
 +	getOne(@Param('id') id: string) {
 +		return this.commandBus.execute(new GetOne<%= classify(name) %>ByIdCommand({ id }));
 +	}

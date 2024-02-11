@@ -38,6 +38,15 @@ export const providers: Provider[] = [
 							error
 						};
 					});
+				},
+				responseBodyFormatter(host, exc, formattedErrors) {
+					const response = exc.getResponse();
+					const status = exc.getStatus();
+					return {
+						status,
+						message: response,
+						errors: formattedErrors
+					};
 				}
 			});
 		}

@@ -9,7 +9,6 @@ import {
 } from '@common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { ApiParam } from '@nestjs/swagger';
 import { CreateUserCommand } from './commands/create-user.command';
 import { GetAllUserPaginatedCommand } from './commands/get-all-user-paginated.command';
 import { GetOneUserByIdCommand } from './commands/get-one-user-by-id.command';
@@ -38,7 +37,6 @@ export class UserController {
 
 	@Get(':id')
 	@ApiGetOne(UserEntity, 'User')
-	@ApiParam({ name: 'id', description: 'Truyền all nếu muốn lấy tất cả' })
 	getOne(@Param('id') id: string) {
 		return this.commandBus.execute(new GetOneUserByIdCommand({ id }));
 	}

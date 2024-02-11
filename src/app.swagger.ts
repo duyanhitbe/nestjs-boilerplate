@@ -1,3 +1,4 @@
+import { BookEntity } from '@apis/book/entities/book.entity';
 import { UserEntity } from '@apis/user/entities/user.entity';
 import { INestApplication, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -40,4 +41,4 @@ export function useSwagger(app: INestApplication) {
 	logger.log(`Your documentation is running on http://localhost:${port}/${path}`);
 }
 
-const extraModels = [UserEntity];
+const extraModels = [UserEntity, BookEntity];

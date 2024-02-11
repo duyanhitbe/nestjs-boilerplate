@@ -25,8 +25,6 @@ export * from './helpers/validation.helper';
 
 export * from './interceptors/format-response.interceptor';
 
-export * from './interfaces/base-service.interface';
-
 export * from './middlewares/logger.middleware';
 
 export * from './pipes/hash-password.pipe';

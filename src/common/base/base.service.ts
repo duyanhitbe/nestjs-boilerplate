@@ -10,7 +10,7 @@ import {
 	UpdateResult
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { AbstractBaseService } from '../interfaces/base-service.interface';
+import { AbstractBaseService } from './base.interface';
 
 /** 
  * BaseService là một class bao gồm các method viết sẵn phục vụ cho việc thêm xóa sửa. Nó được kế thừa bởi class khác.
