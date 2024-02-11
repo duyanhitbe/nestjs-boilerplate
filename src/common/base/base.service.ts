@@ -1,16 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { BaseEntity, ValidationHelper } from '@common';
+import { BaseEntity } from '@common';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { extend } from 'lodash';
 import {
-	And,
 	DeepPartial,
 	DeleteResult,
 	FindOptionsWhere,
-	ILike,
-	LessThanOrEqual,
-	Like,
-	MoreThanOrEqual,
 	Repository,
 	UpdateResult
 } from 'typeorm';
@@ -28,43 +23,6 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 		super();
 	}
 
-	private getWhere(options: Partial<FindOptions<T>>) {
-		const where = options.where || {};
-		const filter = JSON.parse(options.filter || '{}');
-		for (const field in filter) {
-			where[field] = Like(`%${filter[field]}%`);
-		}
-		return where;
-	}
-
-	private setWhereGetAllWithPagination(where: FindOptionsWhere<T> | FindOptionsWhere<T>[], filter: any) {
-		let from, to;
-
-		for (const field in filter) {
-			if (field === 'from') {
-				from = MoreThanOrEqual(filter[field]);
-			} else if (field === 'to') {
-				to = LessThanOrEqual(filter[field]);
-			} else if (typeof filter[field] === 'boolean' || ValidationHelper.isUuid(filter[field])) {
-				where[field] = filter[field];
-			} else {
-				where[field] = ILike(`%${filter[field]}%`);
-			}
-		}
-
-		if (from && !to) {
-			where['createdAt'] = from;
-		}
-
-		if (!from && to) {
-			where['createdAt'] = to;
-		}
-
-		if (from && to) {
-			where['createdAt'] = And(from, to);
-		}
-	}
-
 	create(data: DeepPartial<T>): Promise<T> {
 		return this.repository.create(data).save();
 	}
@@ -79,14 +37,13 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 	}
 
 	getOne(options: FindOptions<T>): Promise<T | null> {
-		const { relations, loadEagerRelations, order, withDeleted, select } = options;
-		const where = this.getWhere(options);
+		const { relations, loadEagerRelations, order, withDeleted, select, where } = options;
 		return this.repository.findOne({ where, relations, loadEagerRelations, order, withDeleted, select });
 	}
 
 	async getOneOrFail(options: FindOrFailOptions<T>): Promise<T> {
 		const errorMessage = options?.errorMessage || this.notFoundMessage;
-		const where = this.getWhere(options);
+		const where = options.where;
 		const entity = await this.getOne({ ...options, where });
 		if (!entity) throw new NotFoundException(errorMessage);
 		return entity;
@@ -117,7 +74,7 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 
 	getAll(options: Partial<FindOptions<T>>): Promise<T[]> {
 		const { relations, order, loadEagerRelations, withDeleted, select } = options;
-		const where = this.getWhere(options);
+		const where = options.where;
 		return this.repository.find({
 			where,
 			relations,
@@ -129,19 +86,18 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 	}
 
 	async getAllPaginated(options: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>> {
-		const loadEagerRelations = options.loadEagerRelations;
-		const select = options.select;
-		const withDeleted = options.withDeleted;
-		const where = options.where || [];
-		const filter = JSON.parse(options.filter || '{}');
-		const order = JSON.parse(options.sort || '{}');
-		const relations = options.relations;
-		const limit = +(options.limit || 10);
-		const page = +(options.page || 1);
+		const { 
+			limit = 10, 
+			page = 1, 
+			where = { ...options.where, ...options.filter }, 
+			select, 
+			withDeleted, 
+			loadEagerRelations, 
+			order, 
+			relations 
+		} = options;
 		const take = limit === -1 ? undefined : limit;
 		const skip = limit === -1 ? undefined : limit * (+page - 1);
-
-		this.setWhereGetAllWithPagination(where, filter);
 
 		const findAndCountOptions = { where, order, relations, take, skip, loadEagerRelations, withDeleted, select };
 		const [data, total] = await this.repository.findAndCount(findAndCountOptions);

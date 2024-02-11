@@ -28,7 +28,18 @@ export const providers: Provider[] = [
 	{
 		provide: APP_FILTER,
 		useFactory() {
-			return new I18nValidationExceptionFilter();
+			return new I18nValidationExceptionFilter({
+				errorFormatter(errors) {
+					return errors.map(({ property, constraints }) => {
+						const key = Object.keys(constraints || {})[0];
+						const error = constraints?.[key] || 'Invalid';
+						return {
+							property,
+							error
+						};
+					});
+				}
+			});
 		}
 	}
 ];

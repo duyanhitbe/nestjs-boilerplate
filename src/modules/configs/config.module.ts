@@ -14,7 +14,7 @@ import * as Joi from 'joi';
 				DB_HOST: Joi.string(),
 				DB_PORT: Joi.number(),
 				DB_USERNAME: Joi.string().required(),
-				DB_PASSWORD: Joi.string().required(),
+				DB_PASSWORD: Joi.string().required().allow(''),
 				DB_NAME: Joi.string().required(),
 				DB_SCHEMA: Joi.string().required(),
 

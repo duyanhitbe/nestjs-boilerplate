@@ -31,7 +31,12 @@ export class LoggerMiddleware implements NestMiddleware {
 				unitTime = 's';
 			}
 			const { statusCode, statusMessage } = res;
-			this.logger.verbose(`[${statusCode}] - ${statusMessage} - ${timeSpent}${unitTime}`);
+			const logMessage = `[${statusCode}] - ${statusMessage} - ${timeSpent}${unitTime}`;
+			if (statusCode === 200 || statusCode === 201) {
+				this.logger.verbose(logMessage);
+			} else {
+				this.logger.error(logMessage);
+			}
 		});
 
 		next();

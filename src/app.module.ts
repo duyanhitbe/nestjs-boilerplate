@@ -1,10 +1,11 @@
 import { ApiModule } from '@apis/api.module';
 import { ConfigModule, CronModule, DatabaseModule, JwtModule } from '@modules';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { providers } from './app.provider';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { I18NModule } from './modules/i18n/i18n.module';
 
 @Module({
@@ -23,4 +24,8 @@ import { I18NModule } from './modules/i18n/i18n.module';
 	controllers: [AppController],
 	providers
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(LoggerMiddleware).forRoutes('*');
+	}
+}
