@@ -7,6 +7,7 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
+    "packageJson": "<rootDir>../package.json",
     "src/(.*)": "<rootDir>../src/$1",
     "@common": "<rootDir>../src/common",
     "@modules": "<rootDir>../src/modules",

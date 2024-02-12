@@ -36,6 +36,10 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
 	});
 
+	afterAll(() => {
+		app.close();
+	});
+
 	it('/v1/<%= name %> (GET)', async () => {
 		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({});
 		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({});

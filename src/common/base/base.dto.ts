@@ -19,12 +19,20 @@ export class PaginationDto {
 
 	@IsOptional()
 	@Transform(({ value }) => JSON.parse(value || '{}'))
-	@ApiProperty({ description: 'Sort theo field', example: '{ "createdAt": "ASC" }' })
+	@ApiProperty({
+		description: 'Sort theo field',
+		example: '{ "createdAt": "ASC" }',
+		type: 'string'
+	})
 	sort?: Record<string, SortOrder>;
 
 	@IsOptional()
 	@Transform(({ value }) => JSON.parse(value || '{}'))
-	@ApiProperty({ description: 'Filter theo field', example: '{ "name": "string" }' })
+	@ApiProperty({
+		description: 'Filter theo field',
+		example: '{ "name": "string" }',
+		type: 'string'
+	})
 	filter?: FilterQuery<any>;
 
 	@IsOptional()
