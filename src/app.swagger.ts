@@ -1,3 +1,4 @@
+import { BookResponse } from '@apis/book/dto/book-response.dto';
 import { UserResponse } from '@apis/user/dto/user-response.dto';
 import { INestApplication, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -40,4 +41,4 @@ export function useSwagger(app: INestApplication) {
 	logger.log(`Your documentation is running on http://localhost:${port}/${path}`);
 }
 
-const extraModels = [UserResponse];
+const extraModels = [UserResponse, BookResponse];
