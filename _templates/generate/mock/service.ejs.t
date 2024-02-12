@@ -25,8 +25,8 @@ export const <%= h.inflection.camelize(name) %>Service = jest.fn().mockReturnVal
 				updatedAt: new Date()
 			}
 		];
-		const limit = +(query.limit || 10);
-		const page = +(query.page || 10);
+		const limit = query.limit || 10;
+		const page = query.page || 10;
 		const offset = limit * (page - 1);
 		const total = data.length;
 		return {

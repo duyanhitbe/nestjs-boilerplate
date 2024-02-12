@@ -551,7 +551,7 @@ index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc
 +});
 diff --git a/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..ffd03cce08cc3656c74e519eb4e8629346aec635
+index 0000000000000000000000000000000000000000..bb278fb706d7f400ad6c218bb39c961bf3d83715
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/get-all-__name__-paginated.handler.__specFileSuffix__.ts
 @@ -0,0 +1,45 @@
@@ -589,8 +589,8 @@ index 0000000000000000000000000000000000000000..ffd03cce08cc3656c74e519eb4e86293
 +	it('should call <%= lowercased(name) %>Service.getAllPaginated with the provided query', async () => {
 +		const getAll<%= classify(name) %>PaginatedCommand = new GetAll<%= classify(name) %>PaginatedCommand({
 +			query: {
-+				limit: '10',
-+				page: '1'
++				limit: 10,
++				page: 1
 +			}
 +		});
 +
