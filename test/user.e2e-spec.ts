@@ -33,6 +33,10 @@ describe('UserController (e2e)', () => {
 		await userService.softRemoveAll();
 	});
 
+	afterAll(() => {
+		app.close();
+	});
+
 	it('/v1/user (GET)', async () => {
 		const _user1 = await userService.create({
 			username: 'user',
