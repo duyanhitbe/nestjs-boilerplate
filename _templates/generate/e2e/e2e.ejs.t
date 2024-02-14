@@ -36,8 +36,9 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
 	});
 
-	afterAll(() => {
-		app.close();
+	afterAll(async () => {
+		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
+		await app.close();
 	});
 
 	it('/v1/<%= name %> (GET)', async () => {
@@ -45,15 +46,15 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({});
 		return request(httpServer)
 			.get('/v1/<%= name %>')
-			.query({ limit: '1', page: '2' })
+			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'ASC' }) })
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.status).toEqual(200);
 				expect(body.message).toEqual('success');
 				expect(body.data?.length).toEqual(1);
-				expect(body.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>2.id);
+				expect(body.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>1.id);
 				expect(body.pagination.limit).toEqual(1);
-				expect(body.pagination.page).toEqual(2);
+				expect(body.pagination.page).toEqual(1);
 				expect(body.pagination.total).toEqual(2);
 			});
 	});

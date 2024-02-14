@@ -1,7 +1,7 @@
+import { MetadataKey } from '@app/common/constants';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
-import { MetadataKey } from 'src/common/constants';
 import { RedisService } from './redis.service';
 
 @Global()
