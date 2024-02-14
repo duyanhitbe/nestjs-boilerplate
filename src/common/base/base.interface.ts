@@ -66,7 +66,7 @@ export abstract class AbstractBaseService<T extends BaseEntity> {
 	 * @returns Promise<IPaginationResponse<T>>
 	 * @example service.getAllPaginated({ where: { name: 'John Doe' }, limit: '10', page: '1' })
 	 */
-	abstract getAllPaginated(options?: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>>;
+	abstract getAllPaginated(options?: FindPaginatedOptions<T>): Promise<IPaginationResponse<T>>;
 	
 	/** 
 	 * Cập nhật một record, nếu không tìm thấy, trả về lỗi NotFound

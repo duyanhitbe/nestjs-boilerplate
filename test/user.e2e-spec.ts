@@ -50,7 +50,7 @@ describe('UserController (e2e)', () => {
 
 		return request(httpServer)
 			.get('/v1/user')
-			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'asc' }) })
+			.query({ limit: 1, page: 1, order: JSON.stringify({ createdAt: 'asc' }) })
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.status).toEqual(200);

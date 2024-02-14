@@ -85,7 +85,7 @@ export abstract class BaseService<T extends BaseEntity> extends AbstractBaseServ
 		});
 	}
 
-	async getAllPaginated(options: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>> {
+	async getAllPaginated(options: FindPaginatedOptions<T>): Promise<IPaginationResponse<T>> {
 		const { 
 			limit = 10, 
 			page = 1, 
