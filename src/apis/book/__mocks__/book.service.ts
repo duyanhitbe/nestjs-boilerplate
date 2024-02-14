@@ -1,13 +1,10 @@
----
-to: src/apis/<%= name %>/__mocks__/<%= name %>.service.ts
----
 import { PaginationDto } from '@common';
 import { v4 as uuidv4 } from 'uuid';
-import { Create<%= h.inflection.camelize(name) %>Input } from '../dto/create-<%= name %>.input';
-import { Update<%= h.inflection.camelize(name) %>ByIdInput } from '../dto/update-<%= name %>-by-id.input';
+import { CreateBookInput } from '../dto/create-book.input';
+import { UpdateBookByIdInput } from '../dto/update-book-by-id.input';
 
-export const <%= h.inflection.camelize(name) %>Service = jest.fn().mockReturnValue({
-	create: jest.fn((dto: Create<%= h.inflection.camelize(name) %>Input) => ({
+export const BookService = jest.fn().mockReturnValue({
+	create: jest.fn((dto: CreateBookInput) => ({
 		id: uuidv4(),
 		createdAt: new Date(),
 		updatedAt: new Date()
@@ -48,7 +45,7 @@ export const <%= h.inflection.camelize(name) %>Service = jest.fn().mockReturnVal
 		createdAt: new Date(),
 		updatedAt: new Date()
 	})),
-	updateById: jest.fn((id: string, data: Update<%= h.inflection.camelize(name) %>ByIdInput) => ({
+	updateById: jest.fn((id: string, data: UpdateBookByIdInput) => ({
 		...data,
 		id,
 		createdAt: new Date(),

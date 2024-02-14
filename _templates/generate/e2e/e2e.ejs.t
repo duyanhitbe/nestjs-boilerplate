@@ -1,8 +1,8 @@
 ---
 to: test/<%= name %>.e2e-spec.ts
 ---
-import { Create<%= h.inflection.camelize(name) %>Dto } from '@apis/<%= name %>/dto/create-<%= name %>.dto';
-import { Update<%= h.inflection.camelize(name) %>ByIdDto } from '@apis/<%= name %>/dto/update-<%= name %>-by-id.dto';
+import { Create<%= h.inflection.camelize(name) %>Input } from '@apis/<%= name %>/dto/create-<%= name %>.input';
+import { Update<%= h.inflection.camelize(name) %>ByIdInput } from '@apis/<%= name %>/dto/update-<%= name %>-by-id.input';
 import { I<%= h.inflection.camelize(name) %>Service } from '@apis/<%= name %>/<%= name %>.interface';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -65,7 +65,7 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 			});
 	});
 	it('/v1/<%= name %> (POST)', () => {
-		const create<%= h.inflection.camelize(name) %>Data: Create<%= h.inflection.camelize(name) %>Dto = {};
+		const create<%= h.inflection.camelize(name) %>Data: Create<%= h.inflection.camelize(name) %>Input = {};
 		return request(httpServer)
 			.post('/v1/<%= name %>')
 			.send(create<%= h.inflection.camelize(name) %>Data)
@@ -77,7 +77,7 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 	});
 	it('/v1/<%= name %>/:id (PATCH)', async () => {
 		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		const update<%= h.inflection.camelize(name) %>Data: Update<%= h.inflection.camelize(name) %>ByIdDto = {};
+		const update<%= h.inflection.camelize(name) %>Data: Update<%= h.inflection.camelize(name) %>ByIdInput = {};
 		return request(httpServer)
 			.patch(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
 			.send(update<%= h.inflection.camelize(name) %>Data)

@@ -127,7 +127,7 @@ index 0000000000000000000000000000000000000000..128197f7804619bc2ba80dcea7791db3
 +
 +export abstract class I<%= classify(name) %>Service extends BaseService<<%= classify(name) %>Entity> {}
 diff --git a/dist/lib/resource/files/ts/__name__.module.ts b/dist/lib/resource/files/ts/__name__.module.ts
-index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17fe973a9b 100644
+index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..73aac610b5d5bbf7946178be6bc7bb6ae2eee5e3 100644
 --- a/dist/lib/resource/files/ts/__name__.module.ts
 +++ b/dist/lib/resource/files/ts/__name__.module.ts
 @@ -1,9 +1,29 @@
@@ -139,8 +139,8 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17
 +import { GetOne<%= classify(name) %>ByIdHandler } from './handlers/get-one-<%= name %>-by-id.handler';
 +import { Remove<%= classify(name) %>ByIdHandler } from './handlers/remove-<%= name %>-by-id.handler';
 +import { Update<%= classify(name) %>ByIdHandler } from './handlers/update-<%= name %>-by-id.handler';
-+import { <%= classify(name) %>Controller } from './<%= name %>.controller';
 +import { I<%= classify(name) %>Service } from './<%= name %>.interface';
++import { <%= classify(name) %>Resolver } from './<%= name %>.resolver';
  import { <%= classify(name) %>Service } from './<%= name %>.service';
 -<% if (type === 'rest' || type === 'microservice') { %>import { <%= classify(name) %>Controller } from './<%= name %>.controller';<% } %><% if (type === 'graphql-code-first' || type === 'graphql-schema-first') { %>import { <%= classify(name) %>Resolver } from './<%= name %>.resolver';<% } %><% if (type === 'ws') { %>import { <%= classify(name) %>Gateway } from './<%= name %>.gateway';<% } %>
  
@@ -148,12 +148,12 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17
 -  <% if (type === 'rest' || type === 'microservice') { %>controllers: [<%= classify(name) %>Controller],
 -  providers: [<%= classify(name) %>Service],<% } else if (type === 'graphql-code-first' || type === 'graphql-schema-first') { %>providers: [<%= classify(name) %>Resolver, <%= classify(name) %>Service],<% } else { %>providers: [<%= classify(name) %>Gateway, <%= classify(name) %>Service],<% } %>
 +	imports: [TypeOrmModule.forFeature([<%= classify(name) %>Entity])],
-+	controllers: [<%= classify(name) %>Controller],
 +	providers: [
 +		{
 +			provide: I<%= classify(name) %>Service,
 +			useClass: <%= classify(name) %>Service
 +		},
++		<%= classify(name) %>Resolver,
 +		Create<%= classify(name) %>Handler,
 +		GetAll<%= classify(name) %>PaginatedHandler,
 +		GetOne<%= classify(name) %>ByIdHandler,
@@ -163,6 +163,148 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..49f189567bc9b8c226378dc88070db17
 +	exports: [I<%= classify(name) %>Service]
  })
  export class <%= classify(name) %>Module {}
+diff --git a/dist/lib/resource/files/ts/__name__.resolver.ts b/dist/lib/resource/files/ts/__name__.resolver.ts
+index 534518e70c284c07be4297f9d4acbc55c0493b2e..ba08d944eb8631be58c294b9f8ff594397c6ad25 100644
+--- a/dist/lib/resource/files/ts/__name__.resolver.ts
++++ b/dist/lib/resource/files/ts/__name__.resolver.ts
+@@ -1,60 +1,44 @@
+-import { Resolver<% if (crud && type === 'graphql-schema-first') { %>, Query, Mutation, Args<% } else if (crud && type === 'graphql-code-first') { %>, Query, Mutation, Args, Int<% } %> } from '@nestjs/graphql';
+-import { <%= classify(name) %>Service } from './<%= name %>.service';<% if (crud && type === 'graphql-code-first') { %>
+-import { <%= singular(classify(name)) %> } from './entities/<%= singular(name) %>.entity';<% } %><% if (crud) { %>
+-import { Create<%= singular(classify(name)) %>Input } from './dto/create-<%= singular(name) %>.input';
+-import { Update<%= singular(classify(name)) %>Input } from './dto/update-<%= singular(name) %>.input';<% } %>
+-
+-<% if (type === 'graphql-code-first' && crud) { %>@Resolver(() => <%= singular(classify(name)) %>)<% } else if (type === 'graphql-code-first') {%>@Resolver()<% } else { %>@Resolver('<%= singular(classify(name)) %>')<% } %>
++import { CommandBus } from '@nestjs/cqrs';
++import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
++import { Create<%= classify(name) %>Command } from './commands/create-<%= name %>.command';
++import { GetAll<%= classify(name) %>PaginatedCommand } from './commands/get-all-<%= name %>-paginated.command';
++import { GetOne<%= classify(name) %>ByIdCommand } from './commands/get-one-<%= name %>-by-id.command';
++import { Remove<%= classify(name) %>ByIdCommand } from './commands/remove-<%= name %>-by-id.command';
++import { Update<%= classify(name) %>ByIdCommand } from './commands/update-<%= name %>-by-id.command';
++import { Create<%= classify(name) %>Input } from './dto/create-<%= name %>.input';
++import { Update<%= classify(name) %>ByIdInput } from './dto/update-<%= name %>-by-id.input';
++import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++import { GetAll<%= classify(name) %>Args, <%= classify(name) %>Paginated } from './<%= name %>.schema';
++
++@Resolver(() => <%= classify(name) %>Entity)
+ export class <%= classify(name) %>Resolver {
+-  constructor(private readonly <%= lowercased(name) %>Service: <%= classify(name) %>Service) {}<% if (crud && type === 'graphql-code-first') { %>
+-
+-  @Mutation(() => <%= singular(classify(name)) %>)
+-  create<%= singular(classify(name)) %>(@Args('create<%= singular(classify(name)) %>Input') create<%= singular(classify(name)) %>Input: Create<%= singular(classify(name)) %>Input) {
+-    return this.<%= lowercased(name) %>Service.create(create<%= singular(classify(name)) %>Input);
+-  }
+-
+-  @Query(() => [<%= singular(classify(name)) %>], { name: '<%= lowercased(classify(name)) %>' })
+-  findAll() {
+-    return this.<%= lowercased(name) %>Service.findAll();
+-  }
+-
+-  @Query(() => <%= singular(classify(name)) %>, { name: '<%= lowercased(singular(classify(name))) %>' })
+-  findOne(@Args('id', { type: () => Int }) id: number) {
+-    return this.<%= lowercased(name) %>Service.findOne(id);
+-  }
+-
+-  @Mutation(() => <%= singular(classify(name)) %>)
+-  update<%= singular(classify(name)) %>(@Args('update<%= singular(classify(name)) %>Input') update<%= singular(classify(name)) %>Input: Update<%= singular(classify(name)) %>Input) {
+-    return this.<%= lowercased(name) %>Service.update(update<%= singular(classify(name)) %>Input.id, update<%= singular(classify(name)) %>Input);
+-  }
+-
+-  @Mutation(() => <%= singular(classify(name)) %>)
+-  remove<%= singular(classify(name)) %>(@Args('id', { type: () => Int }) id: number) {
+-    return this.<%= lowercased(name) %>Service.remove(id);
+-  }<% } else if (crud && type === 'graphql-schema-first') {%>
+-
+-  @Mutation('create<%= singular(classify(name)) %>')
+-  create(@Args('create<%= singular(classify(name)) %>Input') create<%= singular(classify(name)) %>Input: Create<%= singular(classify(name)) %>Input) {
+-    return this.<%= lowercased(name) %>Service.create(create<%= singular(classify(name)) %>Input);
+-  }
+-
+-  @Query('<%= lowercased(classify(name)) %>')
+-  findAll() {
+-    return this.<%= lowercased(name) %>Service.findAll();
+-  }
+-
+-  @Query('<%= lowercased(singular(classify(name))) %>')
+-  findOne(@Args('id') id: number) {
+-    return this.<%= lowercased(name) %>Service.findOne(id);
+-  }
+-
+-  @Mutation('update<%= singular(classify(name)) %>')
+-  update(@Args('update<%= singular(classify(name)) %>Input') update<%= singular(classify(name)) %>Input: Update<%= singular(classify(name)) %>Input) {
+-    return this.<%= lowercased(name) %>Service.update(update<%= singular(classify(name)) %>Input.id, update<%= singular(classify(name)) %>Input);
+-  }
+-
+-  @Mutation('remove<%= singular(classify(name)) %>')
+-  remove(@Args('id') id: number) {
+-    return this.<%= lowercased(name) %>Service.remove(id);
+-  }<% } %>
++	constructor(private readonly commandBus: CommandBus) {}
++
++	@Query(() => <%= classify(name) %>Paginated)
++	getAll<%= classify(name) %>Paginated(@Args('query', { nullable: true }) query: GetAll<%= classify(name) %>Args) {
++		return this.commandBus.execute(new GetAll<%= classify(name) %>PaginatedCommand({ query }));
++	}
++
++	@Query(() => <%= classify(name) %>Entity)
++	getOne<%= classify(name) %>(@Args('id') id: string) {
++		return this.commandBus.execute(new GetOne<%= classify(name) %>ByIdCommand({ id }));
++	}
++
++	@Mutation(() => <%= classify(name) %>Entity)
++	create<%= classify(name) %>(@Args('data') data: Create<%= classify(name) %>Input) {
++		return this.commandBus.execute(new Create<%= classify(name) %>Command({ data }));
++	}
++
++	@Mutation(() => <%= classify(name) %>Entity)
++	update<%= classify(name) %>(
++		@Args('id') id: string,
++		@Args('data', { nullable: true }) data: Update<%= classify(name) %>ByIdInput
++	) {
++		return this.commandBus.execute(new Update<%= classify(name) %>ByIdCommand({ id, data }));
++	}
++
++	@Mutation(() => <%= classify(name) %>Entity)
++	remove<%= classify(name) %>(@Args('id') id: string) {
++		return this.commandBus.execute(new Remove<%= classify(name) %>ByIdCommand({ id }));
++	}
+ }
+diff --git a/dist/lib/resource/files/ts/__name__.schema.ts b/dist/lib/resource/files/ts/__name__.schema.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..50493c5edd6edd2066fa602b36434446cdb0f162
+--- /dev/null
++++ b/dist/lib/resource/files/ts/__name__.schema.ts
+@@ -0,0 +1,29 @@
++import { GetAllArgs, PaginationResponse } from '@common';
++import { Field, InputType, ObjectType } from '@nestjs/graphql';
++import { IsObject, IsOptional } from 'class-validator';
++import JSON from 'graphql-type-json';
++import { translate } from 'src/modules/i18n/i18n.helper';
++import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
++import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
++
++@ObjectType()
++export class <%= classify(name) %>Paginated {
++	@Field(() => [<%= classify(name) %>Entity])
++	data!: <%= classify(name) %>Entity[];
++
++	@Field(() => PaginationResponse)
++	pagination!: PaginationResponse;
++}
++
++@InputType()
++export class GetAll<%= classify(name) %>Args extends GetAllArgs {
++	@Field(() => JSON, { nullable: true })
++	@IsOptional()
++	@IsObject({ message: translate('validation.IS_JSON') })
++	filter?: FindOptionsWhere<<%= classify(name) %>Entity> | FindOptionsWhere<<%= classify(name) %>Entity>[];
++
++	@Field(() => JSON, { nullable: true })
++	@IsOptional()
++	@IsObject({ message: translate('validation.IS_JSON') })
++	order?: FindOptionsOrder<<%= classify(name) %>Entity>;
++}
 diff --git a/dist/lib/resource/files/ts/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/__name__.service.__specFileSuffix__.ts
 deleted file mode 100644
 index 2b3f38b0f51c556a070d19fff7b3f6d840470730..0000000000000000000000000000000000000000
@@ -212,14 +354,14 @@ index 21943aa0987dd8dd020596bede4f801c686bff6d..acdc2226a24787525b59286983d20b71
 +}
 diff --git a/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts b/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..bb3ecec19816bb3bac33a5ab985c0173c84d1bc5
+index 0000000000000000000000000000000000000000..926784c0380526c4794b51902d2e4dff189fa4f6
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/commands/create-__name@singular__.command.ts
 @@ -0,0 +1,9 @@
-+import { Create<%= classify(name) %>Dto } from '../dto/create-<%= name %>.dto';
++import { Create<%= classify(name) %>Input } from '../dto/create-<%= name %>.input';
 +
 +export class Create<%= classify(name) %>Command {
-+	data!: Create<%= classify(name) %>Dto;
++	data!: Create<%= classify(name) %>Input;
 +
 +	constructor(data: Create<%= classify(name) %>Command) {
 +		Object.assign(this, data);
@@ -268,15 +410,15 @@ index 0000000000000000000000000000000000000000..b4a39483e712e1509b77428fc441a7db
 +}
 diff --git a/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts b/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..e60ca0522581208617e9b5537c64dfece9f0730c
+index 0000000000000000000000000000000000000000..c5852e9f6c0b32a1f10a0e15eec6b69f3ba6e530
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/commands/update-__name@singular__-by-id.command.ts
 @@ -0,0 +1,10 @@
-+import { Update<%= classify(name) %>ByIdDto } from '../dto/update-<%= name %>-by-id.dto';
++import { Update<%= classify(name) %>ByIdInput } from '../dto/update-<%= name %>-by-id.input';
 +
 +export class Update<%= classify(name) %>ByIdCommand {
 +	id!: string;
-+	data!: Update<%= classify(name) %>ByIdDto;
++	data!: Update<%= classify(name) %>ByIdInput;
 +
 +	constructor(data: Update<%= classify(name) %>ByIdCommand) {
 +		Object.assign(this, data);
@@ -289,6 +431,27 @@ index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..59b6b6c9d48e88f2ef96d9aa2aaadda8
 @@ -1 +1 @@
 -export class Create<%= singular(classify(name)) %>Dto {}
 +export class Create<%= classify(name) %>Dto {}
+diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.input.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.input.ts
+index f13dd09eeca373a2c2b953783c80539d8266e946..ceec6cd001f49bb6fd09b9c62adeb711f5fdc68e 100644
+--- a/dist/lib/resource/files/ts/dto/create-__name@singular__.input.ts
++++ b/dist/lib/resource/files/ts/dto/create-__name@singular__.input.ts
+@@ -1,7 +1,11 @@
+-<% if (type === 'graphql-code-first') { %>import { InputType, Int, Field } from '@nestjs/graphql';
++import { IsNotEmpty, IsString } from '@common';
++import { Field, InputType } from '@nestjs/graphql';
+ 
+ @InputType()
+-export class Create<%= singular(classify(name)) %>Input {
+-  @Field(() => Int, { description: 'Example field (placeholder)' })
+-  exampleField: number;
+-}<% } else { %>export class Create<%= singular(classify(name)) %>Input {}<% } %>
++export class Create<%= classify(name) %>Input {
++	/** Name */
++	@Field({ description: 'Name' })
++	@IsString()
++	@IsNotEmpty()
++	name!: string;
++}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018eaf4838b53
@@ -299,25 +462,52 @@ index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018ea
 +import { Create<%= classify(name) %>Dto } from './create-<%= name %>.dto';
 +
 +export class Update<%= classify(name) %>ByIdDto extends PartialType(Create<%= classify(name) %>Dto) {}
+diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..42710807d7949b721bd175213896330c01b6cb94
+--- /dev/null
++++ b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts
+@@ -0,0 +1,11 @@
++import { IsNotEmpty, IsString } from '@common';
++import { Field, InputType } from '@nestjs/graphql';
++
++@InputType()
++export class Update<%= classify(name) %>ByIdInput {
++	/** Name */
++	@Field({ description: 'Name', nullable: true })
++	@IsString()
++	@IsNotEmpty()
++	name?: string;
++}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
+diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.input.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__.input.ts
+deleted file mode 100644
+index 3d0d3fa086ea98a9ab8784652d81821868eba85c..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e59ffd95f 100644
+index 362e741b403a8216353797d2235f07e2ac77719b..4ad71a821beae9c9f9779aea8bed4778805a19e1 100644
 --- a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
 +++ b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-@@ -1,7 +1,5 @@
+@@ -1,7 +1,12 @@
 -<% if (type === 'graphql-code-first') { %>import { ObjectType, Field, Int } from '@nestjs/graphql';
 +import { BaseEntity } from '@common';
-+import { Entity } from 'typeorm';
++import { Field, ObjectType } from '@nestjs/graphql';
++import { Entity, Column } from 'typeorm';
  
 -@ObjectType()
 -export class <%= singular(classify(name)) %> {
 -  @Field(() => Int, { description: 'Example field (placeholder)' })
 -  exampleField: number;
 -}<% } else { %>export class <%= singular(classify(name)) %> {}<% } %>
++@ObjectType('<%= classify(name) %>')
 +@Entity({ name: '<%= dashed(name) %>' })
-+export class <%= classify(name) %>Entity extends BaseEntity {}
++export class <%= classify(name) %>Entity extends BaseEntity {
++	/** Name */
++	@Field()
++	@Column()
++	name!: string;
++}
 diff --git a/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..4cd62bb8c47fefcb2a945a5b2c0eac773d865d36
