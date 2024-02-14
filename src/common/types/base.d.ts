@@ -22,16 +22,11 @@ declare global {
 		errorMessage?: string;
 	};
 
-	type FindWithPaginationOptions<T extends BaseEntity> = Partial<FindOptions<T>> & {
+	type FindPaginatedOptions<T extends BaseEntity> = Partial<FindOptions<T>> & {
 		/** Số item trong một trang */
 		limit?: number;
 		/** Số trang hiện tại */
 		page?: number;
-		/**
-		 * Sắp xếp
-		 * @example {"createdAt": "ASC"}
-		 */
-		sort?: FindOptionsOrder<T>;
 		/**
 		 * Lọc
 		 * @examples { "name": "ABC" }
