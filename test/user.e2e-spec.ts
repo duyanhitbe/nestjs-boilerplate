@@ -1,9 +1,9 @@
 import { CreateUserDto } from '@apis/user/dto/create-user.dto';
 import { UpdateUserByIdDto } from '@apis/user/dto/update-user-by-id.dto';
 import { IUserService } from '@apis/user/user.interface';
+import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
 
 describe('UserController (e2e)', () => {
@@ -33,8 +33,9 @@ describe('UserController (e2e)', () => {
 		await userService.softRemoveAll();
 	});
 
-	afterAll(() => {
-		app.close();
+	afterAll(async () => {
+		await userService.softRemoveAll();
+		await app.close();
 	});
 
 	it('/v1/user (GET)', async () => {
@@ -48,7 +49,7 @@ describe('UserController (e2e)', () => {
 		});
 		return request(httpServer)
 			.get('/v1/user')
-			.query({ limit: '1', page: '2', sort: JSON.stringify({ createdAt: -1 }) })
+			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'asc' }) })
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.status).toEqual(200);
@@ -56,7 +57,7 @@ describe('UserController (e2e)', () => {
 				expect(body.data?.length).toEqual(1);
 				expect(body.data?.[0].id).toEqual(user1.id);
 				expect(body.pagination.limit).toEqual(1);
-				expect(body.pagination.page).toEqual(2);
+				expect(body.pagination.page).toEqual(1);
 				expect(body.pagination.total).toEqual(2);
 			});
 	});

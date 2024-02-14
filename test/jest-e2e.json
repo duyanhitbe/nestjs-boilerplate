@@ -9,6 +9,7 @@
   "moduleNameMapper": {
     "packageJson": "<rootDir>../package.json",
     "src/(.*)": "<rootDir>../src/$1",
+    "@app/(.*)": "<rootDir>../src/$1",
     "@common": "<rootDir>../src/common",
     "@modules": "<rootDir>../src/modules",
     "@apis/(.*)": "<rootDir>../src/apis/$1"

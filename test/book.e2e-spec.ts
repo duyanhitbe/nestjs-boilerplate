@@ -3,9 +3,9 @@ import { CreateBookDto } from '@apis/book/dto/create-book.dto';
 import { UpdateBookByIdDto } from '@apis/book/dto/update-book-by-id.dto';
 import { UserModel } from '@apis/user/models/user.model';
 import { IUserService } from '@apis/user/user.interface';
+import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
 
 describe('BookController (e2e)', () => {
@@ -43,8 +43,10 @@ describe('BookController (e2e)', () => {
 		});
 	});
 
-	afterAll(() => {
-		app.close();
+	afterAll(async () => {
+		await userService.softRemoveAll();
+		await bookService.softRemoveAll();
+		await app.close();
 	});
 
 	it('/v1/book (GET)', async () => {
@@ -58,7 +60,7 @@ describe('BookController (e2e)', () => {
 		});
 		return request(httpServer)
 			.get('/v1/book')
-			.query({ limit: 1, page: 2, sort: JSON.stringify({ createdAt: -1 }) })
+			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'asc' }) })
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.status).toEqual(200);
@@ -66,7 +68,7 @@ describe('BookController (e2e)', () => {
 				expect(body.data?.length).toEqual(1);
 				expect(body.data?.[0].id).toEqual(book1.id);
 				expect(body.pagination.limit).toEqual(1);
-				expect(body.pagination.page).toEqual(2);
+				expect(body.pagination.page).toEqual(1);
 				expect(body.pagination.total).toEqual(2);
 			});
 	});
