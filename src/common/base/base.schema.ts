@@ -1,6 +1,6 @@
+import { translate } from '@app/modules/i18n/i18n.helper';
 import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { translate } from 'src/modules/i18n/i18n.helper';
 
 @ObjectType()
 export class PaginationResponse {

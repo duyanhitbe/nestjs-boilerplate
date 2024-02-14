@@ -1,6 +1,7 @@
+import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
+import * as packageJson from 'packageJson';
 import * as request from 'supertest';
 
 describe('AppController (e2e)', () => {
@@ -24,13 +25,8 @@ describe('AppController (e2e)', () => {
 	});
 
 	it('/ (GET)', () => {
-		return request(app.getHttpServer())
-			.get('/')
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data).toEqual('Hello World!');
-			});
+		const name = packageJson.name;
+		const version = packageJson.version;
+		return request(app.getHttpServer()).get('/').expect(200).expect(`${name} v${version}`);
 	});
 });

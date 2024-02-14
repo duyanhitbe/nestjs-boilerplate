@@ -1,4 +1,4 @@
-import { schema } from "src/modules/configs/env";
+import { schema } from "@app/modules/configs/env";
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class User1706412751363 implements MigrationInterface {

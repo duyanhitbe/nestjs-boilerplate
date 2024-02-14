@@ -1,9 +1,9 @@
 import { CreateUserInput } from '@apis/user/dto/create-user.input';
 import { UpdateUserByIdInput } from '@apis/user/dto/update-user-by-id.input';
 import { IUserService } from '@apis/user/user.interface';
+import { AppModule } from '@app/app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
 
 describe('UserResolver (e2e)', () => {
@@ -19,8 +19,8 @@ describe('UserResolver (e2e)', () => {
 		await app.init();
 
 		//Remove all user
-		// userService = app.get<IUserService>(IUserService);
-		// await userService.softRemoveAll();
+		userService = app.get<IUserService>(IUserService);
+		await userService.softRemoveAll();
 	});
 
 	afterAll(async () => {
@@ -28,51 +28,51 @@ describe('UserResolver (e2e)', () => {
 	});
 
 	it('getAllUserPaginated (Query)', async () => {
-		// const _user1 = await userService.create({
-		// 	username: 'user',
-		// 	password: 'strongPassword'
-		// });
-		// const user2 = await userService.create({
-		// 	username: 'user',
-		// 	password: 'strongPassword'
-		// });
-		// const getAllUserPaginatedQuery = `
-		// 	query GetAllUserPaginated($query: GetAllUserArgs) {
-		// 		getAllUserPaginated(query: $query) {
-		// 			data {
-		// 				username
-		// 			}
-		// 			pagination {
-		// 				limit
-		// 				page
-		// 				total
-		// 			}
-		// 		}
-		// 	}
-		// `;
-		// return request(app.getHttpServer())
-		// 	.post('/graphql')
-		// 	.send({
-		// 		operationName: 'getAllUserPaginated',
-		// 		variables: {
-		// 			query: {
-		// 				limit: 1,
-		// 				page: 2
-		// 			}
-		// 		},
-		// 		query: getAllUserPaginatedQuery
-		// 	})
-		// 	.expect(200)
-		// 	.then(({ body }) => {
-		// 		expect(body.status).toEqual(200);
-		// 		expect(body.message).toEqual('success');
-		// 		expect(body.data?.length).toEqual(1);
-		// 		expect(body.data?.[0].id).toEqual(user2.id);
-		// 		expect(body.pagination.limit).toEqual(1);
-		// 		expect(body.pagination.page).toEqual(2);
-		// 		expect(body.pagination.total).toEqual(2);
-		// 	});
-		expect(1).toEqual(1);
+		const user1 = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		const user2 = await userService.create({
+			username: 'user',
+			password: 'strongPassword'
+		});
+		const getAllUserPaginatedQuery = `
+			query GetAllUserPaginated($query: GetAllUserArgs) {
+				getAllUserPaginated(query: $query) {
+					data {
+						username
+					}
+					pagination {
+						limit
+						page
+						total
+					}
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					query: {
+						limit: 1,
+						page: 2,
+						order: {
+							createdAt: 'ASC'
+						}
+					}
+				},
+				query: getAllUserPaginatedQuery
+			})
+			.expect(200)
+			.then(({ body }) => {
+				console.log(body);
+				expect(body.data?.length).toEqual(1);
+				expect(body.data?.[0].id).toEqual(user1.id);
+				expect(body.pagination.limit).toEqual(1);
+				expect(body.pagination.page).toEqual(2);
+				expect(body.pagination.total).toEqual(2);
+			});
 	});
 	it('getOneUser (Query)', async () => {
 		const user = await userService.create({

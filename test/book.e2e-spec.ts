@@ -1,9 +1,9 @@
 import { IBookService } from '@apis/book/book.interface';
 import { CreateBookInput } from '@apis/book/dto/create-book.input';
 import { UpdateBookByIdInput } from '@apis/book/dto/update-book-by-id.input';
+import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
 
 describe('BookController (e2e)', () => {
