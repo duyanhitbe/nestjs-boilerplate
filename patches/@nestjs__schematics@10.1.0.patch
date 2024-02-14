@@ -281,12 +281,21 @@ index 0000000000000000000000000000000000000000..e60ca0522581208617e9b5537c64dfec
 +	}
 +}
 diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..59b6b6c9d48e88f2ef96d9aa2aaadda83934d841 100644
+index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..4b042d2f497964762ab4be91ffb89378be9d0de2 100644
 --- a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
 +++ b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-@@ -1 +1 @@
+@@ -1 +1,10 @@
 -export class Create<%= singular(classify(name)) %>Dto {}
-+export class Create<%= classify(name) %>Dto {}
++import { IsNotEmpty, IsString } from '@common';
++import { ApiProperty } from '@nestjs/swagger';
++
++export class Create<%= classify(name) %>Dto {
++	/** name */
++	@ApiProperty({ description: 'name' })
++	@IsString()
++	@IsNotEmpty()
++	name!: string;
++}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018eaf4838b53
@@ -301,13 +310,14 @@ diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/di
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e59ffd95f 100644
+index 362e741b403a8216353797d2235f07e2ac77719b..d3b34a166465e534fdd5a60e2dc69ec0c68e2124 100644
 --- a/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
 +++ b/dist/lib/resource/files/ts/entities/__name@singular@ent__.ts
-@@ -1,7 +1,5 @@
+@@ -1,7 +1,11 @@
 -<% if (type === 'graphql-code-first') { %>import { ObjectType, Field, Int } from '@nestjs/graphql';
 +import { BaseEntity } from '@common';
-+import { Entity } from 'typeorm';
++import { ApiProperty } from '@nestjs/swagger';
++import { Column, Entity } from 'typeorm';
  
 -@ObjectType()
 -export class <%= singular(classify(name)) %> {
@@ -315,7 +325,12 @@ index 362e741b403a8216353797d2235f07e2ac77719b..9087f6cd721ce015db55e8f0d03e805e
 -  exampleField: number;
 -}<% } else { %>export class <%= singular(classify(name)) %> {}<% } %>
 +@Entity({ name: '<%= dashed(name) %>' })
-+export class <%= classify(name) %>Entity extends BaseEntity {}
++export class <%= classify(name) %>Entity extends BaseEntity {
++	/** name */
++	@ApiProperty({ description: 'name' })
++	@Column()
++	name!: string;
++}
 diff --git a/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts b/dist/lib/resource/files/ts/handlers/create-__name__.handler.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..4cd62bb8c47fefcb2a945a5b2c0eac773d865d36
@@ -505,7 +520,7 @@ index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b
 +});
 diff --git a/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc524cf2d0
+index 0000000000000000000000000000000000000000..4b70efaa2c6c2eb8dcdc0d50d757ed55854528c8
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 @@ -0,0 +1,40 @@
@@ -541,7 +556,7 @@ index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc
 +	});
 +
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
-+		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: {} });
++		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: { name: '<%= name %>' } });
 +
 +		await handler.execute(create<%= classify(name) %>Command);
 +		const { data } = create<%= classify(name) %>Command;
@@ -700,7 +715,7 @@ index 0000000000000000000000000000000000000000..6ba46c46fd3cba9f230e169d0b736daf
 +});
 diff --git a/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e43688046d
+index 0000000000000000000000000000000000000000..861b210ce5606e6d2c6a776b1abdb461caf9592d
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 @@ -0,0 +1,44 @@
@@ -739,7 +754,7 @@ index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e4
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
 +		const update<%= classify(name) %>ByIdCommand = new Update<%= classify(name) %>ByIdCommand({
 +			id: uuidv4(),
-+			data: {}
++			data: { name: '<%= name %>' }
 +		});
 +
 +		await handler.execute(update<%= classify(name) %>ByIdCommand);
