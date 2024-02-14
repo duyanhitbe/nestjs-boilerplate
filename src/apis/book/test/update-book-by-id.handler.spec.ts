@@ -1,11 +1,14 @@
+import { IUserService } from '@app/apis/user/user.interface';
+import { UserService } from '@app/apis/user/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuidv4 } from 'uuid';
-import { UpdateBookByIdCommand } from '../commands/update-book-by-id.command';
-import { UpdateBookByIdHandler } from '../handlers/update-book-by-id.handler';
 import { IBookService } from '../book.interface';
 import { BookService } from '../book.service';
+import { UpdateBookByIdCommand } from '../commands/update-book-by-id.command';
+import { UpdateBookByIdHandler } from '../handlers/update-book-by-id.handler';
 
 jest.mock('../book.service');
+jest.mock('../../user/user.service');
 
 describe('UpdateBookByIdHandler', () => {
 	let handler: UpdateBookByIdHandler;
@@ -18,6 +21,10 @@ describe('UpdateBookByIdHandler', () => {
 				{
 					provide: IBookService,
 					useClass: BookService
+				},
+				{
+					provide: IUserService,
+					useClass: UserService
 				}
 			]
 		}).compile();

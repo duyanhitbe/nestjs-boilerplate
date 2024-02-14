@@ -1,11 +1,5 @@
-import { IsNotEmpty, IsString } from '@common';
-import { Field, InputType } from '@nestjs/graphql';
+import { InputType, PartialType } from '@nestjs/graphql';
+import { CreateBookInput } from './create-book.input';
 
 @InputType()
-export class UpdateBookByIdInput {
-	/** Name */
-	@Field({ description: 'Name', nullable: true })
-	@IsString()
-	@IsNotEmpty()
-	name?: string;
-}
+export class UpdateBookByIdInput extends PartialType(CreateBookInput) {}

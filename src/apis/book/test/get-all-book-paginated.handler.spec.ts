@@ -32,8 +32,8 @@ describe('GetAllBookPaginatedHandler', () => {
 	it('should call bookService.getAllPaginated with the provided query', async () => {
 		const getAllBookPaginatedCommand = new GetAllBookPaginatedCommand({
 			query: {
-				limit: '10',
-				page: '1'
+				limit: 10,
+				page: 1
 			}
 		});
 

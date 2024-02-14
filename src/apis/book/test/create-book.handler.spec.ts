@@ -1,10 +1,13 @@
+import { IUserService } from '@app/apis/user/user.interface';
+import { UserService } from '@app/apis/user/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateBookCommand } from '../commands/create-book.command';
-import { CreateBookHandler } from '../handlers/create-book.handler';
 import { IBookService } from '../book.interface';
 import { BookService } from '../book.service';
+import { CreateBookCommand } from '../commands/create-book.command';
+import { CreateBookHandler } from '../handlers/create-book.handler';
 
 jest.mock('../book.service');
+jest.mock('../../user/user.service');
 
 describe('CreateBookHandler', () => {
 	let handler: CreateBookHandler;
@@ -17,6 +20,10 @@ describe('CreateBookHandler', () => {
 				{
 					provide: IBookService,
 					useClass: BookService
+				},
+				{
+					provide: IUserService,
+					useClass: UserService
 				}
 			]
 		}).compile();
@@ -30,7 +37,12 @@ describe('CreateBookHandler', () => {
 	});
 
 	it('should call bookService.create with the provided data', async () => {
-		const createBookCommand = new CreateBookCommand({ data: {} });
+		const createBookCommand = new CreateBookCommand({
+			data: {
+				name: 'Harry Potter',
+				userId: '123'
+			}
+		});
 
 		await handler.execute(createBookCommand);
 		const { data } = createBookCommand;
