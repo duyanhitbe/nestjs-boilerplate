@@ -100,7 +100,7 @@ export abstract class BaseService<T extends BaseModel> extends AbstractBaseServi
 		return query.exec();
 	}
 
-	async getAllPaginated(options: FindWithPaginationOptions<T>): Promise<IPaginationResponse<T>> {
+	async getAllPaginated(options: FindPaginatedOptions<T>): Promise<IPaginationResponse<T>> {
 		let where = { ...options.where };
 		const relations = options.relations;
 		const withDeleted = options.withDeleted;

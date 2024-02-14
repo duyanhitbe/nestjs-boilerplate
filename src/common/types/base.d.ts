@@ -27,7 +27,7 @@ declare global {
 		errorMessage?: string;
 	};
 
-	type FindWithPaginationOptions<T extends BaseModel> = Partial<FindOptions<T>> & {
+	type FindPaginatedOptions<T extends BaseModel> = Partial<FindOptions<T>> & {
 		/** Số item trong một trang */
 		limit?: number;
 		/** Số trang hiện tại */
