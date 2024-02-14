@@ -46,7 +46,7 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({});
 		return request(httpServer)
 			.get('/v1/<%= name %>')
-			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'ASC' }) })
+			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'asc' }) })
 			.expect(200)
 			.then(({ body }) => {
 				expect(body.status).toEqual(200);
