@@ -365,12 +365,22 @@ index 0000000000000000000000000000000000000000..6c63bd32cc91e7242a6b5c5dbb055940
 +	pagination!: IPagination;
 +}
 diff --git a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..59b6b6c9d48e88f2ef96d9aa2aaadda83934d841 100644
+index db822a4c2c6aff30b48ebbc767f2d622b68a4de9..fac9a4fee6611186989edb85841dd516569352bd 100644
 --- a/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
 +++ b/dist/lib/resource/files/ts/dto/create-__name@singular__.dto.ts
-@@ -1 +1 @@
+@@ -1 +1,10 @@
 -export class Create<%= singular(classify(name)) %>Dto {}
-+export class Create<%= classify(name) %>Dto {}
++import { IsNotEmpty, IsString } from '@common';
++import { ApiProperty } from '@nestjs/swagger';
++
++export class Create<%= classify(name) %>Dto {
++    /** name */
++	@ApiProperty({ description: 'name' })
++	@IsString()
++	@IsNotEmpty()
++	name!: string;
++}
+\ No newline at end of file
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018eaf4838b53
@@ -504,17 +514,22 @@ index 0000000000000000000000000000000000000000..7a8ef0a457b7d202baee724910977a2f
 +}
 diff --git a/dist/lib/resource/files/ts/models/__name__.model.ts b/dist/lib/resource/files/ts/models/__name__.model.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..ce2e4c18842534a54b6d062c54269ef6f071a23f
+index 0000000000000000000000000000000000000000..265cb5eec9d7ab89acbdbaf3f38dce7101cf51d0
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/models/__name__.model.ts
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,14 @@
 +import { BaseModel, Schema, createSchema } from '@common';
 +import { HydratedDocument } from 'mongoose';
++import { Prop } from '@nestjs/mongoose';
 +
 +export type <%= classify(name) %>Document = HydratedDocument<<%= classify(name) %>Model> & BaseModel;
 +
 +@Schema('<%= dashed(name) %>')
-+export class <%= classify(name) %>Model extends BaseModel {}
++export class <%= classify(name) %>Model extends BaseModel {
++	/** name */
++	@Prop()
++	name!: string;
++}
 +
 +export const <%= classify(name) %>Schema = createSchema(<%= classify(name) %>Model);
 diff --git a/dist/lib/resource/files/ts/__name__.gateway.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.gateway.__specFileSuffix__.ts
@@ -591,7 +606,7 @@ index 0000000000000000000000000000000000000000..652152a8e82e631a9912f31c5ce8cf04
 +});
 diff --git a/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc524cf2d0
+index 0000000000000000000000000000000000000000..4b70efaa2c6c2eb8dcdc0d50d757ed55854528c8
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 @@ -0,0 +1,40 @@
@@ -627,7 +642,7 @@ index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc
 +	});
 +
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
-+		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: {} });
++		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: { name: '<%= name %>' } });
 +
 +		await handler.execute(create<%= classify(name) %>Command);
 +		const { data } = create<%= classify(name) %>Command;
@@ -786,7 +801,7 @@ index 0000000000000000000000000000000000000000..6ba46c46fd3cba9f230e169d0b736daf
 +});
 diff --git a/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e43688046d
+index 0000000000000000000000000000000000000000..861b210ce5606e6d2c6a776b1abdb461caf9592d
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 @@ -0,0 +1,44 @@
@@ -825,7 +840,7 @@ index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e4
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
 +		const update<%= classify(name) %>ByIdCommand = new Update<%= classify(name) %>ByIdCommand({
 +			id: uuidv4(),
-+			data: {}
++			data: { name: '<%= name %>' }
 +		});
 +
 +		await handler.execute(update<%= classify(name) %>ByIdCommand);

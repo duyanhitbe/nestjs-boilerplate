@@ -42,8 +42,12 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 	});
 
 	it('/v1/<%= name %> (GET)', async () => {
-		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({});
+		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
+		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
 		return request(httpServer)
 			.get('/v1/<%= name %>')
 			.query({ limit: 1, page: 1, sort: JSON.stringify({ createdAt: 'asc' }) })
@@ -59,7 +63,9 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 			});
 	});
 	it('/v1/<%= name %>/:id (GET)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
 		return request(httpServer)
 			.get(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
 			.expect(200)
@@ -70,7 +76,9 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 			});
 	});
 	it('/v1/<%= name %> (POST)', () => {
-		const create<%= h.inflection.camelize(name) %>Data: Create<%= h.inflection.camelize(name) %>Dto = {};
+		const create<%= h.inflection.camelize(name) %>Data: Create<%= h.inflection.camelize(name) %>Dto = {
+			name: '<%= name %>'
+		};
 		return request(httpServer)
 			.post('/v1/<%= name %>')
 			.send(create<%= h.inflection.camelize(name) %>Data)
@@ -81,7 +89,9 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 			});
 	});
 	it('/v1/<%= name %>/:id (PATCH)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
 		const update<%= h.inflection.camelize(name) %>Data: Update<%= h.inflection.camelize(name) %>ByIdDto = {};
 		return request(httpServer)
 			.patch(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
@@ -94,7 +104,9 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 			});
 	});
 	it('/v1/<%= name %>/:id (DELETE)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
 		return request(httpServer)
 			.patch(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
 			.expect(200)
