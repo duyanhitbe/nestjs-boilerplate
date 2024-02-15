@@ -8,6 +8,7 @@ import { Update<%= h.inflection.camelize(name) %>ByIdInput } from '../dto/update
 
 export const <%= h.inflection.camelize(name) %>Service = jest.fn().mockReturnValue({
 	create: jest.fn((dto: Create<%= h.inflection.camelize(name) %>Input) => ({
+		...dto,
 		id: uuidv4(),
 		createdAt: new Date(),
 		updatedAt: new Date()

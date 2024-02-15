@@ -163,6 +163,9 @@ index 78a5afc4cd647621d9b5c71419d418a6bd64e21d..73aac610b5d5bbf7946178be6bc7bb6a
 +	exports: [I<%= classify(name) %>Service]
  })
  export class <%= classify(name) %>Module {}
+diff --git a/dist/lib/resource/files/ts/__name__.resolver.__specFileSuffix__.ts b/dist/lib/resource/files/ts/__name__.resolver.__specFileSuffix__.ts
+deleted file mode 100644
+index 2ef2c6fcae7e0990141c3bc062c112c42b9cfe9e..0000000000000000000000000000000000000000
 diff --git a/dist/lib/resource/files/ts/__name__.resolver.ts b/dist/lib/resource/files/ts/__name__.resolver.ts
 index 534518e70c284c07be4297f9d4acbc55c0493b2e..ba08d944eb8631be58c294b9f8ff594397c6ad25 100644
 --- a/dist/lib/resource/files/ts/__name__.resolver.ts
@@ -272,7 +275,7 @@ index 534518e70c284c07be4297f9d4acbc55c0493b2e..ba08d944eb8631be58c294b9f8ff5943
  }
 diff --git a/dist/lib/resource/files/ts/__name__.schema.ts b/dist/lib/resource/files/ts/__name__.schema.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..50493c5edd6edd2066fa602b36434446cdb0f162
+index 0000000000000000000000000000000000000000..8797737d44648ddd734a7cd42f0d5ece001aee6e
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/__name__.schema.ts
 @@ -0,0 +1,29 @@
@@ -280,7 +283,7 @@ index 0000000000000000000000000000000000000000..50493c5edd6edd2066fa602b36434446
 +import { Field, InputType, ObjectType } from '@nestjs/graphql';
 +import { IsObject, IsOptional } from 'class-validator';
 +import JSON from 'graphql-type-json';
-+import { translate } from 'src/modules/i18n/i18n.helper';
++import { translate } from '@app/modules/i18n/i18n.helper';
 +import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
 +import { <%= classify(name) %>Entity } from './entities/<%= name %>.entity';
 +
@@ -464,21 +467,15 @@ index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018ea
 +export class Update<%= classify(name) %>ByIdDto extends PartialType(Create<%= classify(name) %>Dto) {}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..42710807d7949b721bd175213896330c01b6cb94
+index 0000000000000000000000000000000000000000..11335d1a36106042570c3b50089c5514ee7dcc7f
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts
-@@ -0,0 +1,11 @@
-+import { IsNotEmpty, IsString } from '@common';
-+import { Field, InputType } from '@nestjs/graphql';
+@@ -0,0 +1,5 @@
++import { InputType, PartialType } from '@nestjs/graphql';
++import { Create<%= classify(name) %>Input } from './create-<%= name %>.input';
 +
 +@InputType()
-+export class Update<%= classify(name) %>ByIdInput {
-+	/** Name */
-+	@Field({ description: 'Name', nullable: true })
-+	@IsString()
-+	@IsNotEmpty()
-+	name?: string;
-+}
++export class Update<%= classify(name) %>ByIdInput extends PartialType(Create<%= classify(name) %>Input) {}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__.dto.ts
 deleted file mode 100644
 index 4a54569c32683fddf02801dd5f3e6598ed5a3888..0000000000000000000000000000000000000000
@@ -639,24 +636,6 @@ index 8f8b5be075c514ef98eb0d9a1c680272175bb414..80ee30c833b36561c5ecc09fda279245
  
  describe('<%= classify(name) %>Gateway', () => {
    let gateway: <%= classify(name) %>Gateway;
-diff --git a/dist/lib/resource/files/ts/__name__.resolver.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.resolver.__specFileSuffix__.ts
-similarity index 74%
-rename from dist/lib/resource/files/ts/__name__.resolver.__specFileSuffix__.ts
-rename to dist/lib/resource/files/ts/test/__name__.resolver.__specFileSuffix__.ts
-index 2ef2c6fcae7e0990141c3bc062c112c42b9cfe9e..38800fb52fe2376d2bb147283a90cc0daf941dd8 100644
---- a/dist/lib/resource/files/ts/__name__.resolver.__specFileSuffix__.ts
-+++ b/dist/lib/resource/files/ts/test/__name__.resolver.__specFileSuffix__.ts
-@@ -1,6 +1,8 @@
- import { Test, TestingModule } from '@nestjs/testing';
--import { <%= classify(name) %>Resolver } from './<%= name %>.resolver';
--import { <%= classify(name) %>Service } from './<%= name %>.service';
-+import { <%= classify(name) %>Resolver } from '../<%= name %>.resolver';
-+import { <%= classify(name) %>Service } from '../<%= name %>.service';
-+
-+jest.mock('../<%= name %>.service');
- 
- describe('<%= classify(name) %>Resolver', () => {
-   let resolver: <%= classify(name) %>Resolver;
 diff --git a/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b44a78d79
@@ -697,7 +676,7 @@ index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b
 +});
 diff --git a/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc524cf2d0
+index 0000000000000000000000000000000000000000..4b70efaa2c6c2eb8dcdc0d50d757ed55854528c8
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/create-__name__.handler.__specFileSuffix__.ts
 @@ -0,0 +1,40 @@
@@ -733,7 +712,7 @@ index 0000000000000000000000000000000000000000..6665bdbf3f9421a0bd5051a4fcec25cc
 +	});
 +
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
-+		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: {} });
++		const create<%= classify(name) %>Command = new Create<%= classify(name) %>Command({ data: { name: '<%= name %>' } });
 +
 +		await handler.execute(create<%= classify(name) %>Command);
 +		const { data } = create<%= classify(name) %>Command;
@@ -892,7 +871,7 @@ index 0000000000000000000000000000000000000000..6ba46c46fd3cba9f230e169d0b736daf
 +});
 diff --git a/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e43688046d
+index 0000000000000000000000000000000000000000..861b210ce5606e6d2c6a776b1abdb461caf9592d
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/update-__name__-by-id.handler.__specFileSuffix__.ts
 @@ -0,0 +1,44 @@
@@ -931,7 +910,7 @@ index 0000000000000000000000000000000000000000..2777305008f7ebada96498226e38a0e4
 +	it('should call <%= lowercased(name) %>Service.create with the provided data', async () => {
 +		const update<%= classify(name) %>ByIdCommand = new Update<%= classify(name) %>ByIdCommand({
 +			id: uuidv4(),
-+			data: {}
++			data: { name: '<%= name %>' }
 +		});
 +
 +		await handler.execute(update<%= classify(name) %>ByIdCommand);
