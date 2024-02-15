@@ -163,16 +163,16 @@ index 534518e70c284c07be4297f9d4acbc55c0493b2e..447b775774de55311c0c0f00d7a51764
  }
 diff --git a/dist/lib/resource/files/ts/__name__.schema.ts b/dist/lib/resource/files/ts/__name__.schema.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..b22cc17b9c3fc0394b6b8d4fe33c4c0ce2e5bdd0
+index 0000000000000000000000000000000000000000..5a6699fd29b9cf12deb379c6b1124600259ee0c4
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/__name__.schema.ts
 @@ -0,0 +1,29 @@
++import { translate } from '@app/modules/i18n/i18n.helper';
 +import { GetAllArgs, PaginationResponse } from '@common';
 +import { Field, InputType, ObjectType } from '@nestjs/graphql';
 +import { IsObject, IsOptional } from 'class-validator';
 +import JSON from 'graphql-type-json';
-+import { translate } from '@app/modules/i18n/i18n.helper';
-+import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
++import { FilterQuery, SortOrder } from 'mongoose';
 +import { <%= classify(name) %>Model } from './models/<%= name %>.model';
 +
 +@ObjectType()
@@ -189,12 +189,12 @@ index 0000000000000000000000000000000000000000..b22cc17b9c3fc0394b6b8d4fe33c4c0c
 +	@Field(() => JSON, { nullable: true })
 +	@IsOptional()
 +	@IsObject({ message: translate('validation.IS_JSON') })
-+	filter?: FindOptionsWhere<<%= classify(name) %>Model> | FindOptionsWhere<<%= classify(name) %>Model>[];
++	filter?: FilterQuery<<%= classify(name) %>Model>;
 +
 +	@Field(() => JSON, { nullable: true })
 +	@IsOptional()
 +	@IsObject({ message: translate('validation.IS_JSON') })
-+	order?: FindOptionsOrder<<%= classify(name) %>Model>;
++	sort?: Record<string, SortOrder>;
 +}
 diff --git a/dist/lib/resource/files/ts/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/__name__.service.__specFileSuffix__.ts
 deleted file mode 100644

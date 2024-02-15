@@ -19,12 +19,7 @@
 		"test:cov": "jest --coverage --detectOpenHandles --maxWorkers=1",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --detectOpenHandles --maxWorkers=1",
 		"test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles --maxWorkers=1",
-		"repl": "npm run start -- --entryFile src/repl",
-		"typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
-		"typeorm:run-migrations": "npm run typeorm migration:run -- -d ./dist/typeorm.config.js",
-		"typeorm:generate-migration": "npm run typeorm -- -d ./dist/typeorm.config.js migration:generate ./src/modules/database/migrations/$npm_config_name",
-		"typeorm:create-migration": "npm run typeorm -- migration:create ./src/modules/database/migrations/$npm_config_name",
-		"typeorm:revert-migration": "npm run typeorm -- -d ./dist/typeorm.config.js migration:revert"
+		"repl": "npm run start -- --entryFile src/repl"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.10.0",
@@ -43,7 +38,6 @@
 		"@nestjs/schedule": "^4.0.0",
 		"@nestjs/serve-static": "^4.0.0",
 		"@nestjs/swagger": "^7.2.0",
-		"@nestjs/typeorm": "^10.0.1",
 		"@types/passport-jwt": "^4.0.1",
 		"argon2": "^0.31.2",
 		"axios": "^1.6.7",
@@ -66,10 +60,8 @@
 		"passport": "^0.7.0",
 		"passport-jwt": "^4.0.1",
 		"passport-local": "^1.0.0",
-		"pg": "^8.11.3",
 		"reflect-metadata": "^0.1.13",
 		"rxjs": "^7.8.1",
-		"typeorm": "^0.3.20",
 		"uuid": "^9.0.1"
 	},
 	"devDependencies": {

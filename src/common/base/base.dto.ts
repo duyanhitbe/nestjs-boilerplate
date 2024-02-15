@@ -1,11 +1,11 @@
-import { BaseEntity } from '@common';
+import { BaseModel } from '@common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { FilterQuery, SortOrder } from 'mongoose';
 import { IsNumber } from '../decorators/validation.decorator';
 
-export class PaginationDto<T = BaseEntity> {
+export class PaginationDto<T = BaseModel> {
 	@IsOptional()
 	@IsNumber()
 	@Transform(({ value }) => +(value || 10))
@@ -25,7 +25,7 @@ export class PaginationDto<T = BaseEntity> {
 		example: '{ "createdAt": "ASC" }',
 		type: 'string'
 	})
-	order?: FindOptionsOrder<T>;
+	sort?: Record<string, SortOrder>;
 
 	@IsOptional()
 	@Transform(({ value }) => JSON.parse(value || '{}'))
@@ -34,7 +34,7 @@ export class PaginationDto<T = BaseEntity> {
 		example: '{ "name": "string" }',
 		type: 'string'
 	})
-	filter?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
+	filter?: FilterQuery<any>;
 
 	@IsOptional()
 	@ApiProperty({ description: 'Tìm kiếm', example: '' })

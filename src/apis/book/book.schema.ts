@@ -3,7 +3,7 @@ import { GetAllArgs, PaginationResponse } from '@common';
 import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsObject, IsOptional } from 'class-validator';
 import JSON from 'graphql-type-json';
-import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
+import { FilterQuery, SortOrder } from 'mongoose';
 import { BookModel } from './models/book.model';
 
 @ObjectType()
@@ -20,10 +20,10 @@ export class GetAllBookArgs extends GetAllArgs {
 	@Field(() => JSON, { nullable: true })
 	@IsOptional()
 	@IsObject({ message: translate('validation.IS_JSON') })
-	filter?: FindOptionsWhere<BookModel> | FindOptionsWhere<BookModel>[];
+	filter?: FilterQuery<BookModel>;
 
 	@Field(() => JSON, { nullable: true })
 	@IsOptional()
 	@IsObject({ message: translate('validation.IS_JSON') })
-	order?: FindOptionsOrder<BookModel>;
+	sort?: Record<string, SortOrder>;
 }

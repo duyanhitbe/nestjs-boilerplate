@@ -1,5 +1,4 @@
 export * from './base/base.dto';
-export * from './base/base.entity';
 export * from './base/base.interface';
 export * from './base/base.model';
 export * from './base/base.schema';
@@ -12,8 +11,6 @@ export * from './decorators/user.decorator';
 export * from './decorators/validation.decorator';
 
 export * from './enums/language.enum';
-
-export * from './filters/typeorm.filter';
 
 export * from './guards/env.guard';
 
