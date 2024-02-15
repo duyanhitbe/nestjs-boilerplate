@@ -6,7 +6,7 @@ import { isEmpty } from 'lodash';
 export class LoggerMiddleware implements NestMiddleware {
 	private logger = new Logger('HTTP');
 	use(req: Request, res: Response, next: NextFunction) {
-		console.log('');
+		this.logger.verbose('--------------------------------------------------------------------');
 		const { method, body, query, headers } = req;
 		const originalUrl = req.originalUrl.replace(/\?.*$/, '');
 		const ip = headers['x-forwarded-for'];
