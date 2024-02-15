@@ -1,15 +1,18 @@
 import { IBookService } from '@apis/book/book.interface';
 import { CreateBookInput } from '@apis/book/dto/create-book.input';
 import { UpdateBookByIdInput } from '@apis/book/dto/update-book-by-id.input';
+import { UserEntity } from '@app/apis/user/entities/user.entity';
+import { IUserService } from '@app/apis/user/user.interface';
 import { AppModule } from '@app/app.module';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 
-describe('BookController (e2e)', () => {
+describe('BookResolver (e2e)', () => {
 	let app: INestApplication;
-	let httpServer: any;
 	let bookService: IBookService;
+	let userService: IUserService;
+	let user: UserEntity;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -17,86 +20,244 @@ describe('BookController (e2e)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		httpServer = app.getHttpServer();
-		app.enableCors({
-			origin: true,
-			credentials: true
-		});
-		app.enableVersioning({
-			type: VersioningType.URI,
-			defaultVersion: '1'
-		});
 		await app.init();
 
 		//Remove all book
 		bookService = app.get<IBookService>(IBookService);
+		userService = app.get<IUserService>(IUserService);
+		await userService.softRemoveAll();
 		await bookService.softRemoveAll();
+		user = await userService.create({
+			username: 'username',
+			password: 'password'
+		});
 	});
 
-	it('/v1/book (GET)', async () => {
-		const book1 = await bookService.create({});
-		const book2 = await bookService.create({});
-		return request(httpServer)
-			.get('/v1/book')
-			.query({ limit: '1', page: '2' })
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data?.length).toEqual(1);
-				expect(body.data?.[0].id).toEqual(book2.id);
-				expect(body.pagination.limit).toEqual(1);
-				expect(body.pagination.page).toEqual(2);
-				expect(body.pagination.total).toEqual(2);
-			});
+	afterAll(async () => {
+		await userService.softRemoveAll();
+		await bookService.softRemoveAll();
+		await app.close();
 	});
-	it('/v1/book/:id (GET)', async () => {
-		const book = await bookService.create({});
-		return request(httpServer)
-			.get(`/v1/book/${book.id}`)
+
+	it('getAllBookPaginated (Query)', async () => {
+		const book1 = await bookService.create({
+			name: 'book',
+			userId: user.id
+		});
+		const book2 = await bookService.create({
+			name: 'book',
+			userId: user.id
+		});
+		const getAllBookPaginatedQuery = `
+			query GetAllBookPaginated($query: GetAllBookArgs) {
+				getAllBookPaginated(query: $query) {
+					data {
+						id
+						createdAt
+						updatedAt
+						deletedAt
+						isActive
+						name
+					}
+					pagination {
+						limit
+						page
+						total
+					}
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					query: {
+						limit: 1,
+						page: 1,
+						order: {
+							createdAt: 'ASC'
+						}
+					}
+				},
+				query: getAllBookPaginatedQuery
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(book.id);
-			});
+			.then(
+				({
+					body: {
+						data: { getAllBookPaginated }
+					}
+				}) => {
+					expect(getAllBookPaginated.data?.length).toEqual(1);
+					expect(getAllBookPaginated.data?.[0].id).toEqual(book1.id);
+					expect(getAllBookPaginated.pagination.limit).toEqual(1);
+					expect(getAllBookPaginated.pagination.page).toEqual(1);
+					expect(getAllBookPaginated.pagination.total).toEqual(2);
+				}
+			);
 	});
-	it('/v1/book (POST)', () => {
+	it('getOneBook (Query)', async () => {
+		const book = await bookService.create({
+			name: 'book',
+			userId: user.id
+		});
+		const getOneBookQuery = `
+			query GetOneBook($getOneBookId: String!) {
+				getOneBook(id: $getOneBookId) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					getOneBookId: book.id
+				},
+				query: getOneBookQuery
+			})
+			.expect(200)
+			.then(
+				({
+					body: {
+						data: { getOneBook }
+					}
+				}) => {
+					expect(getOneBook?.id).toEqual(book.id);
+				}
+			);
+	});
+	it('createBook (Mutation)', () => {
 		const createBookData: CreateBookInput = {
-			name: 'Harry Potter',
-			userId: ''
+			name: 'book',
+			userId: user.id
 		};
-		return request(httpServer)
-			.post('/v1/book')
-			.send(createBookData)
-			.expect(201)
-			.then(({ body }) => {
-				expect(body.status).toEqual(201);
-				expect(body.message).toEqual('success');
-			});
-	});
-	it('/v1/book/:id (PATCH)', async () => {
-		const book = await bookService.create({});
-		const updateBookData: UpdateBookByIdInput = {};
-		return request(httpServer)
-			.patch(`/v1/book/${book.id}`)
-			.send(updateBookData)
+		const createBookQuery = `
+			mutation CreateBook($data: CreateBookInput!) {
+				createBook(data: $data) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					data: createBookData
+				},
+				query: createBookQuery
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(book.id);
-			});
+			.then(
+				({
+					body: {
+						data: { createBook }
+					}
+				}) => {
+					expect(createBook?.id).toBeDefined();
+					expect(createBook?.createdAt).toBeDefined();
+					expect(createBook?.updatedAt).toBeDefined();
+					expect(createBook?.deletedAt).toBeDefined();
+					expect(createBook?.isActive).toBeDefined();
+					expect(createBook?.name).toBeDefined();
+				}
+			);
 	});
-	it('/v1/book/:id (DELETE)', async () => {
-		const book = await bookService.create({});
-		return request(httpServer)
-			.patch(`/v1/book/${book.id}`)
+	it('updateBook (Mutation)', async () => {
+		const book = await bookService.create({
+			name: 'book',
+			userId: user.id
+		});
+		const updatedBookName = 'updatedBookName';
+		const updateBookData: UpdateBookByIdInput = {
+			name: updatedBookName
+		};
+		const updateBookQuery = `
+			mutation UpdateBook($updateBookId: String!, $data: UpdateBookByIdInput) {
+				updateBook(id: $updateBookId, data: $data) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					updateBookId: book.id,
+					data: updateBookData
+				},
+				query: updateBookQuery
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(book.id);
-			});
+			.then(
+				({
+					body: {
+						data: { updateBook }
+					}
+				}) => {
+					expect(updateBook?.id).toBeDefined();
+					expect(updateBook?.createdAt).toBeDefined();
+					expect(updateBook?.updatedAt).toBeDefined();
+					expect(updateBook?.deletedAt).toBeDefined();
+					expect(updateBook?.isActive).toBeDefined();
+					expect(updateBook?.name).toEqual(updatedBookName);
+				}
+			);
+	});
+	it('removeBook (Mutation)', async () => {
+		const book = await bookService.create({
+			name: 'book',
+			userId: user.id
+		});
+		const removeBookQuery = `
+			mutation RemoveBook($removeBookId: String!) {
+				removeBook(id: $removeBookId) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					removeBookId: book.id
+				},
+				query: removeBookQuery
+			})
+			.expect(200)
+			.then(
+				({
+					body: {
+						data: { removeBook }
+					}
+				}) => {
+					expect(removeBook?.id).toBeDefined();
+					expect(removeBook?.createdAt).toBeDefined();
+					expect(removeBook?.updatedAt).toBeDefined();
+					expect(removeBook?.deletedAt).toBeDefined();
+					expect(removeBook?.isActive).toBeDefined();
+					expect(removeBook?.name).toBeDefined();
+				}
+			);
 	});
 });

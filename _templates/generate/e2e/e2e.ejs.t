@@ -1,18 +1,17 @@
 ---
 to: test/<%= name %>.e2e-spec.ts
 ---
-import { Create<%= h.inflection.camelize(name) %>Input } from '@apis/<%= name %>/dto/create-<%= name %>.input';
-import { Update<%= h.inflection.camelize(name) %>ByIdInput } from '@apis/<%= name %>/dto/update-<%= name %>-by-id.input';
-import { I<%= h.inflection.camelize(name) %>Service } from '@apis/<%= name %>/<%= name %>.interface';
-import { INestApplication, VersioningType } from '@nestjs/common';
+import { Create<%= h.inflection.undasherize(name) %>Input } from '@apis/<%= name %>/dto/create-<%= name %>.input';
+import { Update<%= h.inflection.undasherize(name) %>ByIdInput } from '@apis/<%= name %>/dto/update-<%= name %>-by-id.input';
+import { I<%= h.inflection.undasherize(name) %>Service } from '@apis/<%= name %>/<%= name %>.interface';
+import { AppModule } from '@app/app.module';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from 'src/app.module';
 import * as request from 'supertest';
 
-describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
+describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 	let app: INestApplication;
-	let httpServer: any;
-	let <%= h.inflection.camelize(name, true) %>Service: I<%= h.inflection.camelize(name) %>Service;
+	let <%= h.inflection.camelize(name, true) %>Service: I<%= h.inflection.undasherize(name) %>Service;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,83 +19,232 @@ describe('<%= h.inflection.camelize(name) %>Controller (e2e)', () => {
 		}).compile();
 
 		app = moduleFixture.createNestApplication();
-		httpServer = app.getHttpServer();
-		app.enableCors({
-			origin: true,
-			credentials: true
-		});
-		app.enableVersioning({
-			type: VersioningType.URI,
-			defaultVersion: '1'
-		});
 		await app.init();
 
-		//Remove all <%= name %>
-		<%= h.inflection.camelize(name, true) %>Service = app.get<I<%= h.inflection.camelize(name) %>Service>(I<%= h.inflection.camelize(name) %>Service);
+		//Remove all <%= h.inflection.camelize(name, true) %>
+		<%= h.inflection.camelize(name, true) %>Service = app.get<I<%= h.inflection.undasherize(name) %>Service>(I<%= h.inflection.undasherize(name) %>Service);
 		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
 	});
 
-	it('/v1/<%= name %> (GET)', async () => {
-		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		return request(httpServer)
-			.get('/v1/<%= name %>')
-			.query({ limit: '1', page: '2' })
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data?.length).toEqual(1);
-				expect(body.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>2.id);
-				expect(body.pagination.limit).toEqual(1);
-				expect(body.pagination.page).toEqual(2);
-				expect(body.pagination.total).toEqual(2);
-			});
+	afterAll(async () => {
+		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
+		await app.close();
 	});
-	it('/v1/<%= name %>/:id (GET)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		return request(httpServer)
-			.get(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
+
+	it('getAll<%= h.inflection.undasherize(name) %>Paginated (Query)', async () => {
+		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= h.inflection.camelize(name, true) %>'
+		});
+		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= h.inflection.camelize(name, true) %>'
+		});
+		const getAll<%= h.inflection.undasherize(name) %>PaginatedQuery = `
+			query GetAll<%= h.inflection.undasherize(name) %>Paginated($query: GetAll<%= h.inflection.undasherize(name) %>Args) {
+				getAll<%= h.inflection.undasherize(name) %>Paginated(query: $query) {
+					data {
+						id
+						createdAt
+						updatedAt
+						deletedAt
+						isActive
+						name
+					}
+					pagination {
+						limit
+						page
+						total
+					}
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					query: {
+						limit: 1,
+						page: 1,
+						order: {
+							createdAt: 'ASC'
+						}
+					}
+				},
+				query: getAll<%= h.inflection.undasherize(name) %>PaginatedQuery
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(<%= h.inflection.camelize(name, true) %>.id);
-			});
+			.then(
+				({
+					body: {
+						data: { getAll<%= h.inflection.undasherize(name) %>Paginated }
+					}
+				}) => {
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.data?.length).toEqual(1);
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>1.id);
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.limit).toEqual(1);
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.page).toEqual(1);
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.total).toEqual(2);
+				}
+			);
 	});
-	it('/v1/<%= name %> (POST)', () => {
-		const create<%= h.inflection.camelize(name) %>Data: Create<%= h.inflection.camelize(name) %>Input = {};
-		return request(httpServer)
-			.post('/v1/<%= name %>')
-			.send(create<%= h.inflection.camelize(name) %>Data)
-			.expect(201)
-			.then(({ body }) => {
-				expect(body.status).toEqual(201);
-				expect(body.message).toEqual('success');
-			});
-	});
-	it('/v1/<%= name %>/:id (PATCH)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		const update<%= h.inflection.camelize(name) %>Data: Update<%= h.inflection.camelize(name) %>ByIdInput = {};
-		return request(httpServer)
-			.patch(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
-			.send(update<%= h.inflection.camelize(name) %>Data)
+	it('getOne<%= h.inflection.undasherize(name) %> (Query)', async () => {
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= h.inflection.camelize(name, true) %>'
+		});
+		const getOne<%= h.inflection.undasherize(name) %>Query = `
+			query GetOne<%= h.inflection.undasherize(name) %>($getOne<%= h.inflection.undasherize(name) %>Id: String!) {
+				getOne<%= h.inflection.undasherize(name) %>(id: $getOne<%= h.inflection.undasherize(name) %>Id) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					getOne<%= h.inflection.undasherize(name) %>Id: <%= h.inflection.camelize(name, true) %>.id
+				},
+				query: getOne<%= h.inflection.undasherize(name) %>Query
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(<%= h.inflection.camelize(name, true) %>.id);
-			});
+			.then(
+				({
+					body: {
+						data: { getOne<%= h.inflection.undasherize(name) %> }
+					}
+				}) => {
+					expect(getOne<%= h.inflection.undasherize(name) %>?.id).toEqual(<%= h.inflection.camelize(name, true) %>.id);
+				}
+			);
 	});
-	it('/v1/<%= name %>/:id (DELETE)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({});
-		return request(httpServer)
-			.patch(`/v1/<%= name %>/${<%= h.inflection.camelize(name, true) %>.id}`)
+	it('create<%= h.inflection.undasherize(name) %> (Mutation)', () => {
+		const create<%= h.inflection.undasherize(name) %>Data: Create<%= h.inflection.undasherize(name) %>Input = {
+			name: '<%= h.inflection.camelize(name, true) %>'
+		};
+		const create<%= h.inflection.undasherize(name) %>Query = `
+			mutation Create<%= h.inflection.undasherize(name) %>($data: Create<%= h.inflection.undasherize(name) %>Input!) {
+				create<%= h.inflection.undasherize(name) %>(data: $data) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					data: create<%= h.inflection.undasherize(name) %>Data
+				},
+				query: create<%= h.inflection.undasherize(name) %>Query
+			})
 			.expect(200)
-			.then(({ body }) => {
-				expect(body.status).toEqual(200);
-				expect(body.message).toEqual('success');
-				expect(body.data.id).toEqual(<%= h.inflection.camelize(name, true) %>.id);
-			});
+			.then(
+				({
+					body: {
+						data: { create<%= h.inflection.undasherize(name) %> }
+					}
+				}) => {
+					expect(create<%= h.inflection.undasherize(name) %>?.id).toBeDefined();
+					expect(create<%= h.inflection.undasherize(name) %>?.createdAt).toBeDefined();
+					expect(create<%= h.inflection.undasherize(name) %>?.updatedAt).toBeDefined();
+					expect(create<%= h.inflection.undasherize(name) %>?.deletedAt).toBeDefined();
+					expect(create<%= h.inflection.undasherize(name) %>?.isActive).toBeDefined();
+					expect(create<%= h.inflection.undasherize(name) %>?.name).toBeDefined();
+				}
+			);
+	});
+	it('update<%= h.inflection.undasherize(name) %> (Mutation)', async () => {
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= h.inflection.camelize(name, true) %>'
+		});
+		const updated<%= h.inflection.undasherize(name) %>Name = 'updated<%= h.inflection.undasherize(name) %>Name';
+		const update<%= h.inflection.undasherize(name) %>Data: Update<%= h.inflection.undasherize(name) %>ByIdInput = {
+			name: updated<%= h.inflection.undasherize(name) %>Name
+		};
+		const update<%= h.inflection.undasherize(name) %>Query = `
+			mutation Update<%= h.inflection.undasherize(name) %>($update<%= h.inflection.undasherize(name) %>Id: String!, $data: Update<%= h.inflection.undasherize(name) %>ByIdInput) {
+				update<%= h.inflection.undasherize(name) %>(id: $update<%= h.inflection.undasherize(name) %>Id, data: $data) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					update<%= h.inflection.undasherize(name) %>Id: <%= h.inflection.camelize(name, true) %>.id,
+					data: update<%= h.inflection.undasherize(name) %>Data
+				},
+				query: update<%= h.inflection.undasherize(name) %>Query
+			})
+			.expect(200)
+			.then(
+				({
+					body: {
+						data: { update<%= h.inflection.undasherize(name) %> }
+					}
+				}) => {
+					expect(update<%= h.inflection.undasherize(name) %>?.id).toBeDefined();
+					expect(update<%= h.inflection.undasherize(name) %>?.createdAt).toBeDefined();
+					expect(update<%= h.inflection.undasherize(name) %>?.updatedAt).toBeDefined();
+					expect(update<%= h.inflection.undasherize(name) %>?.deletedAt).toBeDefined();
+					expect(update<%= h.inflection.undasherize(name) %>?.isActive).toBeDefined();
+					expect(update<%= h.inflection.undasherize(name) %>?.name).toEqual(updated<%= h.inflection.undasherize(name) %>Name);
+				}
+			);
+	});
+	it('remove<%= h.inflection.undasherize(name) %> (Mutation)', async () => {
+		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= h.inflection.camelize(name, true) %>'
+		});
+		const remove<%= h.inflection.undasherize(name) %>Query = `
+			mutation Remove<%= h.inflection.undasherize(name) %>($remove<%= h.inflection.undasherize(name) %>Id: String!) {
+				remove<%= h.inflection.undasherize(name) %>(id: $remove<%= h.inflection.undasherize(name) %>Id) {
+					id
+					createdAt
+					updatedAt
+					deletedAt
+					isActive
+					name
+				}
+			}
+		`;
+		return request(app.getHttpServer())
+			.post('/graphql')
+			.send({
+				variables: {
+					remove<%= h.inflection.undasherize(name) %>Id: <%= h.inflection.camelize(name, true) %>.id
+				},
+				query: remove<%= h.inflection.undasherize(name) %>Query
+			})
+			.expect(200)
+			.then(
+				({
+					body: {
+						data: { remove<%= h.inflection.undasherize(name) %> }
+					}
+				}) => {
+					expect(remove<%= h.inflection.undasherize(name) %>?.id).toBeDefined();
+					expect(remove<%= h.inflection.undasherize(name) %>?.createdAt).toBeDefined();
+					expect(remove<%= h.inflection.undasherize(name) %>?.updatedAt).toBeDefined();
+					expect(remove<%= h.inflection.undasherize(name) %>?.deletedAt).toBeDefined();
+					expect(remove<%= h.inflection.undasherize(name) %>?.isActive).toBeDefined();
+					expect(remove<%= h.inflection.undasherize(name) %>?.name).toBeDefined();
+				}
+			);
 	});
 });
+
