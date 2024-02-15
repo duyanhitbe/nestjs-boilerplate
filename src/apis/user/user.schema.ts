@@ -4,12 +4,12 @@ import { Field, InputType, ObjectType } from '@nestjs/graphql';
 import { IsObject, IsOptional } from 'class-validator';
 import JSON from 'graphql-type-json';
 import { FindOptionsOrder, FindOptionsWhere } from 'typeorm';
-import { UserEntity } from './entities/user.entity';
+import { UserModel } from './models/user.model';
 
 @ObjectType()
 export class UserPaginated {
-	@Field(() => [UserEntity])
-	data!: UserEntity[];
+	@Field(() => [UserModel])
+	data!: UserModel[];
 
 	@Field(() => PaginationResponse)
 	pagination!: PaginationResponse;
@@ -20,10 +20,10 @@ export class GetAllUserArgs extends GetAllArgs {
 	@Field(() => JSON, { nullable: true })
 	@IsOptional()
 	@IsObject({ message: translate('validation.IS_JSON') })
-	filter?: FindOptionsWhere<UserEntity> | FindOptionsWhere<UserEntity>[];
+	filter?: FindOptionsWhere<UserModel> | FindOptionsWhere<UserModel>[];
 
 	@Field(() => JSON, { nullable: true })
 	@IsOptional()
 	@IsObject({ message: translate('validation.IS_JSON') })
-	order?: FindOptionsOrder<UserEntity>;
+	order?: FindOptionsOrder<UserModel>;
 }

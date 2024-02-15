@@ -1,4 +1,4 @@
-import { ClassSerializerInterceptor, Provider } from '@nestjs/common';
+import { Provider } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AppService } from './app.service';
 import { TypeOrmFilter } from './common/filters/typeorm.filter';
@@ -10,10 +10,6 @@ export const providers: Provider[] = [
 	{
 		provide: APP_PIPE,
 		useClass: ValidationPipe
-	},
-	{
-		provide: APP_INTERCEPTOR,
-		useClass: ClassSerializerInterceptor
 	},
 	{
 		provide: APP_INTERCEPTOR,

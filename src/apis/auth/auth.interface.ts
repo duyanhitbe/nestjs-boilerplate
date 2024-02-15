@@ -1,4 +1,4 @@
-import { BaseEntity } from "@common";
+import { BaseModel } from "@common";
 
 export abstract class IAuthService {
     /** 
@@ -29,7 +29,7 @@ export interface BaseAuthService {
     validateUserById(id: string): Promise<BaseAuthEntity>;
 }
 
-export class BaseAuthEntity extends BaseEntity {
+export class BaseAuthEntity extends BaseModel {
     username!: string;
     password!: string;
 }

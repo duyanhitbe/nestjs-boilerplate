@@ -1,4 +1,4 @@
-import { UserEntity } from '@apis/user/entities/user.entity';
+import { UserModel } from '@apis/user/models/user.model';
 import { User } from '@common';
 import { UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
@@ -14,7 +14,7 @@ export class AuthResolver {
 
 	@UseGuards(UserLocalGuard)
 	@Mutation(() => LoginResponse)
-	loginUser(@Args('data') _loginUserDto: LoginUserInput, @User() user: UserEntity) {
+	loginUser(@Args('data') _loginUserDto: LoginUserInput, @User() user: UserModel) {
 		return this.commandBus.execute(new LoginCommand({ user }));
 	}
 }

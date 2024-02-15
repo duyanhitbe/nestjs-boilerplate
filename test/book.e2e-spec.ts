@@ -1,7 +1,7 @@
 import { IBookService } from '@apis/book/book.interface';
 import { CreateBookInput } from '@apis/book/dto/create-book.input';
 import { UpdateBookByIdInput } from '@apis/book/dto/update-book-by-id.input';
-import { UserEntity } from '@app/apis/user/entities/user.entity';
+import { UserModel } from '@app/apis/user/models/user.model';
 import { IUserService } from '@app/apis/user/user.interface';
 import { AppModule } from '@app/app.module';
 import { INestApplication } from '@nestjs/common';
@@ -12,7 +12,7 @@ describe('BookResolver (e2e)', () => {
 	let app: INestApplication;
 	let bookService: IBookService;
 	let userService: IUserService;
-	let user: UserEntity;
+	let user: UserModel;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({

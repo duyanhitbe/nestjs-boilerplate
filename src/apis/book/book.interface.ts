@@ -1,4 +1,4 @@
 import { BaseService } from '@common';
-import { BookEntity } from './entities/book.entity';
+import { BookModel } from './models/book.model';
 
-export abstract class IBookService extends BaseService<BookEntity> {}
+export abstract class IBookService extends BaseService<BookModel> {}

@@ -1,10 +1,10 @@
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserEntity } from '../entities/user.entity';
+import { UserModel } from '../models/user.model';
 import { IUserService } from '../user.interface';
 import { UserService } from '../user.service';
 
-const mockUserRepository = jest.fn().mockReturnValue({});
+const mockUserModel = jest.fn().mockReturnValue({});
 
 describe('UserService', () => {
 	let service: IUserService;
@@ -17,8 +17,8 @@ describe('UserService', () => {
 					useClass: UserService
 				},
 				{
-					provide: getRepositoryToken(UserEntity),
-					useValue: mockUserRepository
+					provide: getModelToken(UserModel.name),
+					useValue: mockUserModel
 				}
 			]
 		}).compile();

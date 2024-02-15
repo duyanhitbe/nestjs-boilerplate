@@ -7,10 +7,10 @@ import { RemoveUserByIdCommand } from './commands/remove-user-by-id.command';
 import { UpdateUserByIdCommand } from './commands/update-user-by-id.command';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserByIdInput } from './dto/update-user-by-id.input';
-import { UserEntity } from './entities/user.entity';
+import { UserModel } from './models/user.model';
 import { GetAllUserArgs, UserPaginated } from './user.schema';
 
-@Resolver(() => UserEntity)
+@Resolver(() => UserModel)
 export class UserResolver {
 	constructor(private readonly commandBus: CommandBus) {}
 
@@ -19,17 +19,17 @@ export class UserResolver {
 		return this.commandBus.execute(new GetAllUserPaginatedCommand({ query }));
 	}
 
-	@Query(() => UserEntity)
+	@Query(() => UserModel)
 	getOneUser(@Args('id') id: string) {
 		return this.commandBus.execute(new GetOneUserByIdCommand({ id }));
 	}
 
-	@Mutation(() => UserEntity)
+	@Mutation(() => UserModel)
 	createUser(@Args('data') data: CreateUserInput) {
 		return this.commandBus.execute(new CreateUserCommand({ data }));
 	}
 
-	@Mutation(() => UserEntity)
+	@Mutation(() => UserModel)
 	updateUser(
 		@Args('id') id: string,
 		@Args('data', { nullable: true }) data: UpdateUserByIdInput
@@ -37,7 +37,7 @@ export class UserResolver {
 		return this.commandBus.execute(new UpdateUserByIdCommand({ id, data }));
 	}
 
-	@Mutation(() => UserEntity)
+	@Mutation(() => UserModel)
 	removeUser(@Args('id') id: string) {
 		return this.commandBus.execute(new RemoveUserByIdCommand({ id }));
 	}

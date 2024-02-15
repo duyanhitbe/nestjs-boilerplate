@@ -1,4 +1,4 @@
-import { UserEntity } from '@apis/user/entities/user.entity';
+import { UserModel } from '@apis/user/models/user.model';
 import { IUserService } from '@apis/user/user.interface';
 import { CommandBus } from '@nestjs/cqrs';
 import { Args, Mutation, Query, ResolveField, Resolver, Root } from '@nestjs/graphql';
@@ -10,17 +10,17 @@ import { RemoveBookByIdCommand } from './commands/remove-book-by-id.command';
 import { UpdateBookByIdCommand } from './commands/update-book-by-id.command';
 import { CreateBookInput } from './dto/create-book.input';
 import { UpdateBookByIdInput } from './dto/update-book-by-id.input';
-import { BookEntity } from './entities/book.entity';
+import { BookModel } from './models/book.model';
 
-@Resolver(() => BookEntity)
+@Resolver(() => BookModel)
 export class BookResolver {
 	constructor(
 		private readonly commandBus: CommandBus,
 		private readonly userService: IUserService
 	) {}
 
-	@ResolveField(() => UserEntity)
-	user(@Root() root: BookEntity) {
+	@ResolveField(() => UserModel)
+	user(@Root() root: BookModel) {
 		return this.userService.getOneById(root.userId);
 	}
 
@@ -29,17 +29,17 @@ export class BookResolver {
 		return this.commandBus.execute(new GetAllBookPaginatedCommand({ query }));
 	}
 
-	@Query(() => BookEntity)
+	@Query(() => BookModel)
 	getOneBook(@Args('id') id: string) {
 		return this.commandBus.execute(new GetOneBookByIdCommand({ id }));
 	}
 
-	@Mutation(() => BookEntity)
+	@Mutation(() => BookModel)
 	createBook(@Args('data') data: CreateBookInput) {
 		return this.commandBus.execute(new CreateBookCommand({ data }));
 	}
 
-	@Mutation(() => BookEntity)
+	@Mutation(() => BookModel)
 	updateBook(
 		@Args('id') id: string,
 		@Args('data', { nullable: true }) data: UpdateBookByIdInput
@@ -47,7 +47,7 @@ export class BookResolver {
 		return this.commandBus.execute(new UpdateBookByIdCommand({ id, data }));
 	}
 
-	@Mutation(() => BookEntity)
+	@Mutation(() => BookModel)
 	removeBook(@Args('id') id: string) {
 		return this.commandBus.execute(new RemoveBookByIdCommand({ id }));
 	}

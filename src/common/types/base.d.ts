@@ -1,28 +1,33 @@
-import { BaseEntity } from '@common';
-import { FindOptionsOrder, FindOptionsSelect, FindOptionsWhere } from 'typeorm';
+import { BaseModel } from '@common';
+import { FilterQuery, SortOrder } from 'mongoose';
 
 declare global {
-	type FindOptions<T extends BaseEntity> = {
+	type FindOptions<T extends BaseModel> = {
 		/** Điều kiện */
-		where?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
-		/** Sắp xếp */
-		order?: FindOptionsOrder<T>;
+		where?: FilterQuery<T>;
+		/** Sắp xếp
+		 * @example { createdAt: -1 }
+		 */
+		sort?:
+			| string
+			| { [key: string]: SortOrder | { $meta: any } }
+			| [string, SortOrder][]
+			| undefined
+			| null;
 		/** Nối bảng */
-		relations?: string[];
-		/** Bật tắt eager */
-		loadEagerRelations?: boolean;
+		relations?: string | string[];
 		/** Chứa những dữ liệu đã bị xóa */
 		withDeleted?: boolean;
 		/** Chọn trường lấy ra từ DB */
-		select?: FindOptionsSelect<T>;
+		select?: string | string[];
 	};
 
-	type FindOrFailOptions<T extends BaseEntity> = FindOptions<T> & {
+	type FindOrFailOptions<T extends BaseModel> = FindOptions<T> & {
 		/** Thông báo khi không tìm thấy record */
 		errorMessage?: string;
 	};
 
-	type FindPaginatedOptions<T extends BaseEntity> = Partial<FindOptions<T>> & {
+	type FindPaginatedOptions<T extends BaseModel> = Partial<FindOptions<T>> & {
 		/** Số item trong một trang */
 		limit?: number;
 		/** Số trang hiện tại */
@@ -31,38 +36,9 @@ declare global {
 		 * Lọc
 		 * @examples { "name": "ABC" }
 		 */
-		filter?: FindOptionsWhere<T> | FindOptionsWhere<T>[];
-	};
-
-	type IPaginationResponse<T> = {
-		/** Mảng các items */
-		data: T[];
-		pagination: {
-			/** Số item trong một trang */
-			limit: number;
-			/** Số trang hiện tại */
-			page: number;
-			/** Tổng số lượng item */
-			total: number;
-		};
-	};
-
-	type IResponse<T> = {
-		/** Response status code */
-		status: number;
-		/** Thông báo */
-		message: string;
-		/** Dữ liệu */
-		data: T;
-		/** Dữ liệu phân trang */
-		pagination?: {
-			/** Số item trong một trang */
-			limit: number;
-			/** Số trang hiện tại */
-			page: number;
-			/** Tổng số lượng item */
-			total: number;
-		};
+		filter?: FilterQuery<T>;
+		/** Tìm kiếm */
+		search?: string;
 	};
 
 	type GenerateTokenData = {
@@ -72,6 +48,35 @@ declare global {
 	type LogoutData = {
 		success: boolean;
 	};
+	type DeleteResult = {
+		acknowledged: boolean;
+		deletedCount: number;
+	};
+	class IResponse<T extends BaseModel> {
+		/** Response status code */
+		status!: number;
+		/** Thông báo */
+		message!: string;
+		/** Dữ liệu */
+		data!: T;
+		/** Dữ liệu phân trang */
+		pagination?: {
+			/** Số item trong một trang */
+			limit: number;
+			/** Số trang hiện tại */
+			page: number;
+			/** Tổng số lượng item */
+			total: number;
+		};
+	}
+	class IPaginationResponse<T> {
+		/** Mảng các items */
+		@Expose()
+		data!: T[];
+
+		@Expose()
+		pagination!: IPagination;
+	}
 }
 
 export {};

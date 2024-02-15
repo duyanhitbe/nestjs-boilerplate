@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BookEntity } from './entities/book.entity';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { IBookService } from './book.interface';
+import { BookModel } from './models/book.model';
 
 @Injectable()
 export class BookService extends IBookService {
 	notFoundMessage = 'Không tìm thấy Book';
 
-	constructor(@InjectRepository(BookEntity) private readonly bookRepo: Repository<BookEntity>) {
-		super(bookRepo);
+	constructor(@InjectModel(BookModel.name) private readonly bookModel: Model<BookModel>) {
+		super(bookModel);
 	}
 }

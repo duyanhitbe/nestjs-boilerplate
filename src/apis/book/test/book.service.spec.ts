@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { BookEntity } from '../entities/book.entity';
+import { getModelToken } from '@nestjs/mongoose';
+import { BookModel } from '../models/book.model';
 import { IBookService } from '../book.interface';
 import { BookService } from '../book.service';
 
-const mockBookRepository = jest.fn().mockReturnValue({});
+const mockBookModel = jest.fn().mockReturnValue({});
 
 describe('BookService', () => {
 	let service: IBookService;
@@ -17,8 +17,8 @@ describe('BookService', () => {
 					useClass: BookService
 				},
 				{
-					provide: getRepositoryToken(BookEntity),
-					useValue: mockBookRepository
+					provide: getModelToken(BookModel.name),
+					useValue: mockBookModel
 				}
 			]
 		}).compile();
