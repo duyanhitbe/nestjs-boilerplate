@@ -3,6 +3,7 @@ import { CreateBookDto } from '@apis/book/dto/create-book.dto';
 import { UpdateBookByIdDto } from '@apis/book/dto/update-book-by-id.dto';
 import { UserModel } from '@apis/user/models/user.model';
 import { IUserService } from '@apis/user/user.interface';
+import { BookModel } from '@app/apis/book/models/book.model';
 import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +15,7 @@ describe('BookController (e2e)', () => {
 	let bookService: IBookService;
 	let userService: IUserService;
 	let user: UserModel;
+	let book: BookModel;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -41,6 +43,10 @@ describe('BookController (e2e)', () => {
 			username: 'username',
 			password: 'password'
 		});
+		book = await bookService.create({
+			name: 'name',
+			userId: user.id
+		});
 	});
 
 	afterAll(async () => {
@@ -50,11 +56,7 @@ describe('BookController (e2e)', () => {
 	});
 
 	it('/v1/book (GET)', async () => {
-		const book1 = await bookService.create({
-			name: 'God Father',
-			userId: user.id
-		});
-		const book2 = await bookService.create({
+		await bookService.create({
 			name: 'Self Help',
 			userId: user.id
 		});
@@ -66,17 +68,13 @@ describe('BookController (e2e)', () => {
 				expect(body.status).toEqual(200);
 				expect(body.message).toEqual('success');
 				expect(body.data?.length).toEqual(1);
-				expect(body.data?.[0].id).toEqual(book1.id);
+				expect(body.data?.[0].id).toEqual(book.id);
 				expect(body.pagination.limit).toEqual(1);
 				expect(body.pagination.page).toEqual(1);
 				expect(body.pagination.total).toEqual(2);
 			});
 	});
 	it('/v1/book/:id (GET)', async () => {
-		const book = await bookService.create({
-			name: 'God Father',
-			userId: user.id
-		});
 		return request(httpServer)
 			.get(`/v1/book/${book.id}`)
 			.expect(200)
@@ -101,10 +99,6 @@ describe('BookController (e2e)', () => {
 			});
 	});
 	it('/v1/book/:id (PATCH)', async () => {
-		const book = await bookService.create({
-			name: 'God Father',
-			userId: user.id
-		});
 		const updateBookData: UpdateBookByIdDto = {};
 		return request(httpServer)
 			.patch(`/v1/book/${book.id}`)
@@ -117,10 +111,6 @@ describe('BookController (e2e)', () => {
 			});
 	});
 	it('/v1/book/:id (DELETE)', async () => {
-		const book = await bookService.create({
-			name: 'God Father',
-			userId: user.id
-		});
 		return request(httpServer)
 			.patch(`/v1/book/${book.id}`)
 			.expect(200)

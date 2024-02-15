@@ -1,6 +1,7 @@
 import { CreateUserDto } from '@apis/user/dto/create-user.dto';
 import { UpdateUserByIdDto } from '@apis/user/dto/update-user-by-id.dto';
 import { IUserService } from '@apis/user/user.interface';
+import { UserModel } from '@app/apis/user/models/user.model';
 import { AppModule } from '@app/app.module';
 import { INestApplication, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,6 +11,7 @@ describe('UserController (e2e)', () => {
 	let app: INestApplication;
 	let httpServer: any;
 	let userService: IUserService;
+	let user: UserModel;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -31,6 +33,10 @@ describe('UserController (e2e)', () => {
 		//Remove all user
 		userService = app.get<IUserService>(IUserService);
 		await userService.softRemoveAll();
+		user = await userService.create({
+			username: 'username',
+			password: 'password'
+		});
 	});
 
 	afterAll(async () => {
@@ -39,11 +45,7 @@ describe('UserController (e2e)', () => {
 	});
 
 	it('/v1/user (GET)', async () => {
-		const user1 = await userService.create({
-			username: 'user',
-			password: 'strongPassword'
-		});
-		const user2 = await userService.create({
+		await userService.create({
 			username: 'user',
 			password: 'strongPassword'
 		});
@@ -55,17 +57,13 @@ describe('UserController (e2e)', () => {
 				expect(body.status).toEqual(200);
 				expect(body.message).toEqual('success');
 				expect(body.data?.length).toEqual(1);
-				expect(body.data?.[0].id).toEqual(user1.id);
+				expect(body.data?.[0].id).toEqual(user.id);
 				expect(body.pagination.limit).toEqual(1);
 				expect(body.pagination.page).toEqual(1);
 				expect(body.pagination.total).toEqual(2);
 			});
 	});
 	it('/v1/user/:id (GET)', async () => {
-		const user = await userService.create({
-			username: 'user',
-			password: 'strongPassword'
-		});
 		return request(httpServer)
 			.get(`/v1/user/${user.id}`)
 			.expect(200)
@@ -92,10 +90,6 @@ describe('UserController (e2e)', () => {
 			});
 	});
 	it('/v1/user/:id (PATCH)', async () => {
-		const user = await userService.create({
-			username: 'user',
-			password: 'strongPassword'
-		});
 		const updatedUsername = 'updatedUsername';
 		const updateUserData: UpdateUserByIdDto = {
 			username: updatedUsername
@@ -112,10 +106,6 @@ describe('UserController (e2e)', () => {
 			});
 	});
 	it('/v1/user/:id (DELETE)', async () => {
-		const user = await userService.create({
-			username: 'user',
-			password: 'strongPassword'
-		});
 		return request(httpServer)
 			.patch(`/v1/user/${user.id}`)
 			.expect(200)
