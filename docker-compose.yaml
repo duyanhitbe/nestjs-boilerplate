@@ -26,16 +26,12 @@ services:
 
   db:
     container_name: nestjs_boilerplate_db
-    image: postgres:16-alpine
+    image: mongo:7-jammy
     restart: always
-    environment:
-      POSTGRES_USER: $DB_USERNAME
-      POSTGRES_PASSWORD: $DB_PASSWORD
-      POSTGRES_DB: $DB_NAME
     ports:
       - $DB_HOST_PORT:$DB_PORT
     volumes:
-      - .docker/db:/var/lib/postgresql
+      - .docker/db:/data/db
     networks:
       - app_db
 
