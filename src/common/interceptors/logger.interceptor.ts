@@ -10,7 +10,7 @@ export class LoggerInterceptor implements NestInterceptor {
 		context: ExecutionContext,
 		next: CallHandler<any>
 	): Observable<any> | Promise<Observable<any>> {
-		console.log('');
+		this.logger.verbose('--------------------------------------------------------------------');
 		const begin = Date.now();
 		const type = context.getType<GqlContextType>();
 		const isGraphQL = type === 'graphql';
