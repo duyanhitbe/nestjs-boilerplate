@@ -4,6 +4,7 @@ to: test/<%= name %>.e2e-spec.ts
 import { Create<%= h.inflection.undasherize(name) %>Input } from '@apis/<%= name %>/dto/create-<%= name %>.input';
 import { Update<%= h.inflection.undasherize(name) %>ByIdInput } from '@apis/<%= name %>/dto/update-<%= name %>-by-id.input';
 import { I<%= h.inflection.undasherize(name) %>Service } from '@apis/<%= name %>/<%= name %>.interface';
+import { <%= h.inflection.undasherize(name) %>Model } from '@apis/<%= name %>/models/<%= name %>.model';
 import { AppModule } from '@app/app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,6 +13,7 @@ import * as request from 'supertest';
 describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 	let app: INestApplication;
 	let <%= h.inflection.camelize(name, true) %>Service: I<%= h.inflection.undasherize(name) %>Service;
+	let <%= h.inflection.camelize(name, true) %>: <%= h.inflection.undasherize(name) %>Model;
 
 	beforeEach(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -24,6 +26,9 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 		//Remove all <%= h.inflection.camelize(name, true) %>
 		<%= h.inflection.camelize(name, true) %>Service = app.get<I<%= h.inflection.undasherize(name) %>Service>(I<%= h.inflection.undasherize(name) %>Service);
 		await <%= h.inflection.camelize(name, true) %>Service.softRemoveAll();
+		<%= h.inflection.camelize(name, true) %> = await await <%= h.inflection.camelize(name, true) %>Service.create({
+			name: '<%= name %>'
+		});
 	});
 
 	afterAll(async () => {
@@ -32,10 +37,7 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 	});
 
 	it('getAll<%= h.inflection.undasherize(name) %>Paginated (Query)', async () => {
-		const <%= h.inflection.camelize(name, true) %>1 = await <%= h.inflection.camelize(name, true) %>Service.create({
-			name: '<%= h.inflection.camelize(name, true) %>'
-		});
-		const <%= h.inflection.camelize(name, true) %>2 = await <%= h.inflection.camelize(name, true) %>Service.create({
+		await <%= h.inflection.camelize(name, true) %>Service.create({
 			name: '<%= h.inflection.camelize(name, true) %>'
 		});
 		const getAll<%= h.inflection.undasherize(name) %>PaginatedQuery = `
@@ -79,7 +81,7 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 					}
 				}) => {
 					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.data?.length).toEqual(1);
-					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>1.id);
+					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.data?.[0].id).toEqual(<%= h.inflection.camelize(name, true) %>.id);
 					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.limit).toEqual(1);
 					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.page).toEqual(1);
 					expect(getAll<%= h.inflection.undasherize(name) %>Paginated.pagination.total).toEqual(2);
@@ -87,9 +89,6 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 			);
 	});
 	it('getOne<%= h.inflection.undasherize(name) %> (Query)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
-			name: '<%= h.inflection.camelize(name, true) %>'
-		});
 		const getOne<%= h.inflection.undasherize(name) %>Query = `
 			query GetOne<%= h.inflection.undasherize(name) %>($getOne<%= h.inflection.undasherize(name) %>Id: String!) {
 				getOne<%= h.inflection.undasherize(name) %>(id: $getOne<%= h.inflection.undasherize(name) %>Id) {
@@ -162,9 +161,6 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 			);
 	});
 	it('update<%= h.inflection.undasherize(name) %> (Mutation)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
-			name: '<%= h.inflection.camelize(name, true) %>'
-		});
 		const updated<%= h.inflection.undasherize(name) %>Name = 'updated<%= h.inflection.undasherize(name) %>Name';
 		const update<%= h.inflection.undasherize(name) %>Data: Update<%= h.inflection.undasherize(name) %>ByIdInput = {
 			name: updated<%= h.inflection.undasherize(name) %>Name
@@ -207,9 +203,6 @@ describe('<%= h.inflection.undasherize(name) %>Resolver (e2e)', () => {
 			);
 	});
 	it('remove<%= h.inflection.undasherize(name) %> (Mutation)', async () => {
-		const <%= h.inflection.camelize(name, true) %> = await <%= h.inflection.camelize(name, true) %>Service.create({
-			name: '<%= h.inflection.camelize(name, true) %>'
-		});
 		const remove<%= h.inflection.undasherize(name) %>Query = `
 			mutation Remove<%= h.inflection.undasherize(name) %>($remove<%= h.inflection.undasherize(name) %>Id: String!) {
 				remove<%= h.inflection.undasherize(name) %>(id: $remove<%= h.inflection.undasherize(name) %>Id) {

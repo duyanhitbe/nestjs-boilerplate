@@ -345,14 +345,15 @@ index f13dd09eeca373a2c2b953783c80539d8266e946..ceec6cd001f49bb6fd09b9c62adeb711
 +}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d759389d5e33c9a06cc4b9caab9018eaf4838b53
+index 0000000000000000000000000000000000000000..11335d1a36106042570c3b50089c5514ee7dcc7f
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.dto.ts
-@@ -0,0 +1,4 @@
-+import { PartialType } from '@nestjs/swagger';
-+import { Create<%= classify(name) %>Dto } from './create-<%= name %>.dto';
+@@ -0,0 +1,5 @@
++import { InputType, PartialType } from '@nestjs/graphql';
++import { Create<%= classify(name) %>Input } from './create-<%= name %>.input';
 +
-+export class Update<%= classify(name) %>ByIdDto extends PartialType(Create<%= classify(name) %>Dto) {}
++@InputType()
++export class Update<%= classify(name) %>ByIdInput extends PartialType(Create<%= classify(name) %>Input) {}
 diff --git a/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts b/dist/lib/resource/files/ts/dto/update-__name@singular__-by-id.input.ts
 new file mode 100644
 index 0000000000000000000000000000000000000000..42710807d7949b721bd175213896330c01b6cb94
