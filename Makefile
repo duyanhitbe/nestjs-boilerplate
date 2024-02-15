@@ -1,3 +1,9 @@
+start-db:
+	docker compose up -d db
+start-redis:
+	docker compose up -d redis
+start-exclude-app:
+	docker compose up -d --scale app=0
 mock:
 	npx hygen generate mock $(name)
 e2e:
