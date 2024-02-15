@@ -2,72 +2,80 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## What is boilerplate code?
+Boilerplate code is computer language text that you can reuse with little or no alteration in several different contexts.
 
 ## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a boilerplate using <b>NestJS</b>, a popular NodeJS framework, reducing time to write CRUD method by generating code.
 
 ## Installation
-
 ```bash
+$ git clone https://github.com/duyanhitbe/nestjs-boilerplate.git
+
+$ cd nestjs-boilerplate
+```
+Now, you can choose kind of ORM you want to use.
+- Typeorm for SQL (typeorm)
+- Mongoose for MongoDB (mongoose)
+
+And, you can choose what type of API (Application Programming Interface):
+- RESTful (rest)
+- GraphQL (graphql)
+
+Example:
+```bash
+$ git checkout rest/typeorm
+
 $ pnpm install
+
+# Install pnpm if you haven't
+$ npm i -g pnpm
 ```
 
-## Running the app
-
+## Environment
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+$ cp .env.example .env
 ```
+Then replace your owner config
 
-## Test
-
+## Running
 ```bash
-# unit tests
-$ pnpm run test
+# dev mode
+$ pnpm start:dev
 
-# e2e tests
-$ pnpm run test:e2e
+# prod mode
+$ pnpm build
+$ pnpm start:prod
 
-# test coverage
-$ pnpm run test:cov
+# pm2
+$ pm2 start ecosystem.config.js
 ```
 
-## Support
+## Testing
+```bash
+# Unit test
+$ pnpm test
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# End-to-End test
+$ pnpm test:e2e
+```
+
+## Generating
+Strong of this boilerplate code that you can generate CRUD module quickly with one command.
+```bash
+$ make crud name=example
+
+? What transport layer do you use? (Use arrow keys)
+❯ REST API #<-- Choose this one if you are using Restful
+  GraphQL (code first) #<-- Choose this one if you are using GraphQL
+  GraphQL (schema first) 
+  Microservice (non-HTTP) 
+  WebSockets
+
+? Would you like to generate CRUD entry points? (Y/n) #<--Yes or Y
+```
 
 ## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- Author - Duy Anh (doba)
+- Email - [duyanh.it.work@gmail.com](mailto:duyanh.it.work@gmail.com)
+- Linked - [profile](https://linkedin.com/in/duy-anh-nguyen-a62292249)
