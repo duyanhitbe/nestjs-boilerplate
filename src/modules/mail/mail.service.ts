@@ -3,15 +3,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Transporter } from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { getOtpTemplate } from './mail.helper';
+import { IMailService } from './mail.interface';
 
 @Injectable()
-export class MailService {
+export class MailService extends IMailService {
 	constructor(
 		@Inject(MetadataKey.NODEMAILER)
 		private readonly transporter: Transporter<SMTPTransport.SentMessageInfo>
-	) {}
+	) {
+		super();
+	}
 
-	async sendMail(payload: SendMailPayload) {
+	private async sendMail(payload: SendMailPayload) {
 		return this.transporter.sendMail(payload);
 	}
 

@@ -2,7 +2,8 @@ import { MetadataKey } from '@app/common/constants';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
-import { RedisService } from './redis.service';
+import { ICacheService } from './cache.interface';
+import { CacheService } from './cache.service';
 
 @Global()
 @Module({
@@ -20,8 +21,11 @@ import { RedisService } from './redis.service';
 			},
 			inject: [ConfigService]
 		},
-		RedisService
+		{
+			provide: ICacheService,
+			useClass: CacheService
+		}
 	],
-	exports: [RedisService]
+	exports: [ICacheService]
 })
-export class RedisModule {}
+export class CacheModule {}

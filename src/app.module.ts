@@ -1,11 +1,15 @@
 import { ApiModule } from '@apis/api.module';
-import { ConfigModule, CronModule, DatabaseModule, GraphQLModule, JwtModule } from '@modules';
+import { ConfigModule } from '@modules/configs';
+import { CronModule } from '@modules/cron';
+import { DatabaseModule } from '@modules/database';
+import { GraphQLModule } from '@modules/graphql';
+import { I18NModule } from '@modules/i18n';
+import { JwtModule } from '@modules/jwt';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { providers } from './app.provider';
-import { I18NModule } from './modules/i18n/i18n.module';
 
 @Module({
 	imports: [
