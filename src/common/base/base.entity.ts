@@ -27,7 +27,7 @@ export class BaseEntity extends TypeormBaseEntity {
 	/** Ngày xoá */
 	@ApiProperty({ description: 'Ngày xoá' })
 	@DeleteDateColumn()
-	deletedAt!: Date;
+	deletedAt?: Date | null;
 
 	/** Kích hoạt */
 	@ApiProperty({ description: 'Kích hoạt' })
