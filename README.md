@@ -116,10 +116,10 @@ When you run one of two command abort, it will generate a new file in <b>src/mod
 			inject: [ConfigService],
 			useFactory: (configService: ConfigService) => ({
 				migrations: [
-                  User1706412751363, 
-                  Book1707635652785
-                  NewMigrationFile //<-- Right here
-                ]
+		                  User1706412751363, 
+		                  Book1707635652785
+		                  NewMigrationFile //<-- Right here
+		                ]
 			})
 		})
 	]
@@ -147,12 +147,12 @@ import { IJwtService } from '@modules/jwt';
 @Injectable()
 export class FooService {
 	constructor(private readonly jwtService: IJwtService) {}
-
-    async login(username: string, password: string) {
-      //Validate user
-      ...
-      return this.jwtService.sign({ username });
-    }
+	
+	async login(username: string, password: string) {
+		//Validate user
+		...
+		return this.jwtService.sign({ username });
+	}
 }
 ```
 
@@ -165,21 +165,21 @@ import { IRedisService } from '@modules/redis';
 @Injectable()
 export class BarService {
 	constructor(private readonly redisService: IRedisService) {}
-
-    async getHugeData() {
-      //Get data from cache
-      const key = 'HUGE_DATA';
-      const cachedData = await this.redisService.get(key);
-      if (cachedData) {
-        return cachedData;
-      }
-
-      const expireTime = 60 * 60; //1m
-      const veryHugeData = getData();
-      //Cache data
-      this.redisService.set(key, veryHugeData, expireTime);
-      return veryHugeData;
-    }
+	
+	async getHugeData() {
+		//Get data from cache
+		const key = 'HUGE_DATA';
+		const cachedData = await this.redisService.get(key);
+		if (cachedData) {
+			return cachedData;
+		}
+		
+		const expireTime = 60 * 60; //1m
+		const veryHugeData = getData();
+		//Cache data
+		this.redisService.set(key, veryHugeData, expireTime);
+		return veryHugeData;
+	}
 }
 ```
 
@@ -192,12 +192,12 @@ import { Cron } from '@nestjs/schedule';
 @Injectable()
 export class CronService {
 	private readonly logger = new Logger(CronService.name);
-
-    /* When the number of second is 45, this method will be executed */
-    @Cron('45 * * * * *') 
-    helloWorld() {
-      console.log('Hello World');
-    }
+	
+	/* When the number of second is 45, this method will be executed */
+	@Cron('45 * * * * *') 
+	helloWorld() {
+		console.log('Hello World');
+	}
 }
 ```
 Check this [link](https://docs.nestjs.com/techniques/task-scheduling) to more information
@@ -210,17 +210,17 @@ Base on package `nestjs-i18n` to translate multiple language. Let's check it out
 @Module({
 	imports: [
 		I18nModule.forRoot({
-            // Default language
+			// Default language
 			fallbackLanguage: Language.VI,
-            // Load JSON file
+			// Load JSON file
 			loaderOptions: {
 				path: join(__dirname, '/translations/'),
 				watch: true
 			},
-            // Resolver that I18nModule can verify which language do you want to use?
-            // In this case, that is pass "x-lang" into header
+			// Resolver that I18nModule can verify which language do you want to use?
+			// In this case, that is pass "x-lang" into header
 			resolvers: [new HeaderResolver(['x-lang'])], 
-            // Path to generate ts file
+			// Path to generate ts file
 			typesOutputPath: join(
 				__dirname,
 				'/../../../../src/modules/i18n/generated/i18n.generated.ts'
@@ -246,10 +246,10 @@ import { I18nService } from 'nestjs-i18n';
 @Injectable()
 export class CronService {
 	constructor(private readonly i18n: I18nService) {}
-
-    getHello(): string {
-      return this.i18n.t('test.WRONG_PASSWORD');
-    }
+	
+	getHello(): string {
+		return this.i18n.t('test.WRONG_PASSWORD');
+	}
 }
 ```
 Validation with class-validator
