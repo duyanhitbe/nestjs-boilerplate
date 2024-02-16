@@ -1,4 +1,4 @@
-import { IJwtService, JwtService } from '@modules';
+import { IJwtService, JwtService } from '@modules/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v4 as uuidv4 } from 'uuid';
 import { LoginCommand } from '../commands/login.command';
