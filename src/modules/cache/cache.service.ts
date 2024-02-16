@@ -1,10 +1,13 @@
 import { MetadataKey } from '@app/common/constants';
 import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
+import { ICacheService } from './cache.interface';
 
 @Injectable()
-export class RedisService {
-	constructor(@Inject(MetadataKey.REDIS) private redis: Redis) {}
+export class CacheService extends ICacheService {
+	constructor(@Inject(MetadataKey.REDIS) private redis: Redis) {
+		super();
+	}
 
 	async set(key: string, value: string, expired: string | number): Promise<'OK'> {
 		await this.del(key);

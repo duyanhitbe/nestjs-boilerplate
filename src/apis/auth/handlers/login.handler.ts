@@ -1,4 +1,4 @@
-import { IJwtService } from '@modules';
+import { IJwtService } from '@modules/jwt';
 import { Logger } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LoginCommand } from '../commands/login.command';

@@ -118,6 +118,7 @@
 			"@app/(.*)": "<rootDir>/$1",
 			"@common": "<rootDir>/common",
 			"@modules": "<rootDir>/modules",
+			"@modules/(.*)": "<rootDir>/modules/$1",
 			"@apis/(.*)": "<rootDir>/apis/$1",
 			"packageJson": "<rootDir>/../package.json"
 		}

@@ -14,7 +14,9 @@
     "@app/(.*)": "<rootDir>/../src/$1",
     "@common": "<rootDir>/../src/common",
     "@modules": "<rootDir>/../src/modules",
+    "@modules/(.*)": "<rootDir>../src/modules/$1",
     "@apis/(.*)": "<rootDir>/../src/apis/$1",
-    "packageJson": "<rootDir>/../package.json"
+    "packageJson": "<rootDir>/../package.json",
+    "src/(.*)": "<rootDir>../src/$1"
   }
 }
