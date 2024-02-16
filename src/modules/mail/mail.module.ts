@@ -2,12 +2,16 @@ import { MetadataKey } from '@common';
 import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createTransport } from 'nodemailer';
+import { IMailService } from './mail.interface';
 import { MailService } from './mail.service';
 
 @Global()
 @Module({
 	providers: [
-		MailService,
+		{
+			provide: IMailService,
+			useClass: MailService
+		},
 		{
 			provide: MetadataKey.NODEMAILER,
 			inject: [ConfigService],
@@ -24,6 +28,6 @@ import { MailService } from './mail.service';
 			}
 		}
 	],
-	exports: [MailService]
+	exports: [IMailService]
 })
 export class MailModule {}

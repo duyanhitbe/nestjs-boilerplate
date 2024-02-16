@@ -12,6 +12,7 @@
     "@app/(.*)": "<rootDir>../src/$1",
     "@common": "<rootDir>../src/common",
     "@modules": "<rootDir>../src/modules",
+    "@modules/(.*)": "<rootDir>../src/modules/$1",
     "@apis/(.*)": "<rootDir>../src/apis/$1"
   }
 }
