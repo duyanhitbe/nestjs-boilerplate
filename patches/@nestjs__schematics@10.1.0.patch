@@ -638,7 +638,7 @@ index 8f8b5be075c514ef98eb0d9a1c680272175bb414..80ee30c833b36561c5ecc09fda279245
    let gateway: <%= classify(name) %>Gateway;
 diff --git a/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b44a78d79
+index 0000000000000000000000000000000000000000..6ccf720bb1a92c656ae83fc59b4215416fa57a36
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 @@ -0,0 +1,32 @@
@@ -648,7 +648,7 @@ index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +import { <%= classify(name) %>Service } from '../<%= name %>.service';
 +
-+const mock<%= classify(name) %>Repository = jest.fn().mockReturnValue({});
++const mock<%= classify(name) %>Repository = jest.fn(() => ({}));
 +
 +describe('<%= classify(name) %>Service', () => {
 +	let service: I<%= classify(name) %>Service;
@@ -662,7 +662,7 @@ index 0000000000000000000000000000000000000000..8ddbd3e6f3e9655eafbb8381f5791e7b
 +				},
 +				{
 +					provide: getRepositoryToken(<%= classify(name) %>Entity),
-+					useValue: mock<%= classify(name) %>Repository
++					useFactory: mock<%= classify(name) %>Repository
 +				}
 +			]
 +		}).compile();

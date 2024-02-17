@@ -40,7 +40,10 @@ describe('UpdateBookByIdHandler', () => {
 	it('should call bookService.create with the provided data', async () => {
 		const updateBookByIdCommand = new UpdateBookByIdCommand({
 			id: uuidv4(),
-			data: {}
+			data: {
+				name: 'updated',
+				userId: '1'
+			}
 		});
 
 		await handler.execute(updateBookByIdCommand);

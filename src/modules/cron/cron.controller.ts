@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
-import { CronService } from './cron.service';
+import { ICronService } from './cron.interface';
 
 @Controller('cron')
 export class CronController {
-	constructor(private readonly cronService: CronService) {}
+	constructor(private readonly cronService: ICronService) {}
 }
