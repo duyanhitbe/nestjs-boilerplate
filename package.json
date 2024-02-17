@@ -14,11 +14,11 @@
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/src/main",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-		"test": "jest --detectOpenHandles --maxWorkers=1",
-		"test:watch": "jest --watch --detectOpenHandles --maxWorkers=1",
-		"test:cov": "jest --coverage --detectOpenHandles --maxWorkers=1",
-		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --detectOpenHandles --maxWorkers=1",
-		"test:e2e": "jest --config ./test/jest-e2e.json --detectOpenHandles --maxWorkers=1",
+		"test": "jest",
+		"test:watch": "jest --watch",
+		"test:cov": "jest --coverage",
+		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+		"test:e2e": "jest --config ./test/jest-e2e.json",
 		"repl": "npm run start -- --entryFile src/repl"
 	},
 	"dependencies": {
@@ -101,9 +101,9 @@
 		"transform": {
 			"^.+\\.(t|j)s$": "ts-jest"
 		},
-		"collectCoverage": true,
+		"collectCoverage": false,
 		"collectCoverageFrom": [
-			"**/*.(service|controller).(t|j)s"
+			"**/*.(service|handler).(t|j)s"
 		],
 		"coveragePathIgnorePatterns": [
 			"mocks"
@@ -114,11 +114,12 @@
 			"src/(.*)": "<rootDir>/$1",
 			"@app/(.*)": "<rootDir>/$1",
 			"@common": "<rootDir>/common",
-			"@modules": "<rootDir>/modules",
 			"@modules/(.*)": "<rootDir>/modules/$1",
 			"@apis/(.*)": "<rootDir>/apis/$1",
 			"packageJson": "<rootDir>/../package.json"
-		}
+		},
+		"maxWorkers": 1,
+		"detectOpenHandles": true
 	},
 	"lint-staged": {
 		"*.ts": [

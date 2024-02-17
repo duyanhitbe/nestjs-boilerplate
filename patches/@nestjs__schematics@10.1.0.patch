@@ -568,7 +568,7 @@ index 2ef2c6fcae7e0990141c3bc062c112c42b9cfe9e..38800fb52fe2376d2bb147283a90cc0d
    let resolver: <%= classify(name) %>Resolver;
 diff --git a/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 new file mode 100644
-index 0000000000000000000000000000000000000000..652152a8e82e631a9912f31c5ce8cf04e88867f3
+index 0000000000000000000000000000000000000000..5175d5d5bb7d52f654bc20ded02301bbe969b5c9
 --- /dev/null
 +++ b/dist/lib/resource/files/ts/test/__name__.service.__specFileSuffix__.ts
 @@ -0,0 +1,32 @@
@@ -578,7 +578,7 @@ index 0000000000000000000000000000000000000000..652152a8e82e631a9912f31c5ce8cf04
 +import { I<%= classify(name) %>Service } from '../<%= name %>.interface';
 +import { <%= classify(name) %>Service } from '../<%= name %>.service';
 +
-+const mock<%= classify(name) %>Model = jest.fn().mockReturnValue({});
++const mock<%= classify(name) %>Model = jest.fn(() => ({}));
 +
 +describe('<%= classify(name) %>Service', () => {
 +	let service: I<%= classify(name) %>Service;
@@ -592,7 +592,7 @@ index 0000000000000000000000000000000000000000..652152a8e82e631a9912f31c5ce8cf04
 +				},
 +				{
 +					provide: getModelToken(<%= classify(name) %>Model.name),
-+					useValue: mock<%= classify(name) %>Model
++					useFactory: mock<%= classify(name) %>Model
 +				}
 +			]
 +		}).compile();

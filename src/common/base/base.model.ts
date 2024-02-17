@@ -14,8 +14,8 @@ export class BaseModel {
 	updatedAt!: Date;
 
 	/** Ngày xoá */
-	@Prop({ default: null })
-	deletedAt?: Date;
+	@Prop({ type: Date, default: null })
+	deletedAt?: Date | null;
 
 	/** Kích hoạt */
 	@Prop({ default: true })
