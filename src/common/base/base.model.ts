@@ -20,8 +20,8 @@ export class BaseModel {
 
 	/** Ngày xoá */
 	@Field(() => Date, { nullable: true })
-	@Prop({ default: null })
-	deletedAt?: Date;
+	@Prop({ type: Date, default: null })
+	deletedAt?: Date | null;
 
 	/** Kích hoạt */
 	@Field(() => Boolean)
